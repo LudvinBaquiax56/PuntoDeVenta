@@ -1,2 +1,0 @@
-# PuntoDeVenta
-ProyectoFinalSextoSemestre
