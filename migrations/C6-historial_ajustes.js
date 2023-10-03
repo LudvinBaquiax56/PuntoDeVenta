@@ -1,22 +1,22 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('categorias', {
+    await queryInterface.createTable('historial_ajustes', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      no_sucursal: {
-        type: Sequelize.STRING,
+      cantidad: {
+        type: Sequelize.INTEGER,
         allowNull: false
       },
-      nombre: {
-        type: Sequelize.STRING,
+      fecha_hora: {
+        type: Sequelize.DATE,
         allowNull: false
       },
-      descripcion: {
+      razon: {
         type: Sequelize.STRING,
         allowNull: false
       },
@@ -32,10 +32,26 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       },
+      id_usuario: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'usuarios',
+            key: 'id'
+        }
+      },
+      id_producto_sucursal: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'producto_sucursales',
+            key: 'id'
+        }
+      },
     });
     
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('categorias');
+    await queryInterface.dropTable('historial_ajustes');
   }
 };

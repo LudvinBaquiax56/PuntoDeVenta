@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('historial_ajustes', {
+    await queryInterface.createTable('detalle_facturas', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,12 +12,12 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false
       },
-      fecha_hora: {
-        type: Sequelize.DATE,
+      subtotal: {
+        type: Sequelize.INTEGER,
         allowNull: false
       },
-      razon: {
-        type: Sequelize.STRING,
+      ganancia: {
+        type: Sequelize.INTEGER,
         allowNull: false
       },
       estado: {
@@ -32,11 +32,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       },
-      id_usuario: {
+      id_factura: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-            model: 'productos',
+            model: 'facturas',
             key: 'id'
         }
       },
@@ -48,18 +48,10 @@ module.exports = {
             key: 'id'
         }
       },
-      id_sucursal: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'sucursales',
-            key: 'id'
-        }
-      },
     });
     
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('historial_ajustes');
+    await queryInterface.dropTable('detalle_facturas');
   }
 };

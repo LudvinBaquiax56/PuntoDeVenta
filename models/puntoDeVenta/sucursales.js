@@ -14,9 +14,6 @@ module.exports = (sequelize, DataTypes) => {
       sucursales.hasMany(models.compras, {
         foreignKey: 'id_sucursal'
       })
-      sucursales.hasMany(models.historial_ajustes, {
-        foreignKey: 'id_sucursal'
-      })
     }
   };
   sucursales.init({
