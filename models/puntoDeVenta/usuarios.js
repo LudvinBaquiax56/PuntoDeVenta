@@ -11,14 +11,17 @@ module.exports = (sequelize, DataTypes) => {
       usuarios.hasMany(models.compras, {
         foreignKey: 'id_usuario'
       })
+      usuarios.hasMany(models.historial_precios, {
+        foreignKey: 'id_usuario'
+      })
       usuarios.hasMany(models.historial_ajustes, {
         foreignKey: 'id_usuario'
       })
-      usuarios.belongsTo(models.roles,{
-        foreignKey: 'id_rol'
-      })
       usuarios.belongsTo(models.empleados,{
         foreignKey: 'id_empleado'
+      })
+      usuarios.belongsTo(models.roles,{
+        foreignKey: 'id_rol'
       })
     }
   };

@@ -3,26 +3,22 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class historial_ajustes extends Model {
+  class historial_precios extends Model {
     static associate(models) {
-      historial_ajustes.belongsTo(models.usuarios,{
-        foreignKey: 'id_usuario'
-      })
-      historial_ajustes.belongsTo(models.producto_sucursales,{
-        foreignKey: 'id_producto_sucursal'
-      })
+          historial_precios.belongsTo(models.productos,{
+            foreignKey: 'id_producto'
+          })
+          historial_precios.belongsTo(models.usuarios,{
+            foreignKey: 'id_usuario'
+          })
     }
   };
-  historial_ajustes.init({
-    cantidad: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-      },
-      fecha_hora: {
+  historial_precios.init({
+      fecha: {
         type: DataTypes.DATE,
         allowNull: false
       },
-      razon: {
+      descripcion: {
         type: DataTypes.STRING,
         allowNull: false
       },
@@ -30,17 +26,21 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false
       },
-      id_usuario: {
+      precio: {
         type: DataTypes.INTEGER,
         allowNull: false
       },
-      id_producto_sucursal: {
+      id_producto: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      id_usuario: {
         type: DataTypes.INTEGER,
         allowNull: false
       },
     }, {
       sequelize,
-      modelName: 'historial_ajustes',
+      modelName: 'historial_precios',
     });
-    return historial_ajustes;
+    return historial_precios;
   };

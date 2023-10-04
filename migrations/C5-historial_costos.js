@@ -1,15 +1,19 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('producto_sucursales', {
+    await queryInterface.createTable('historial_costos', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
-      }, //esto tampoco cambia
-      existencia: {
-        type: Sequelize.INTEGER,
+      },
+      fecha: {
+        type: Sequelize.DATE,
+        allowNull: false
+      },
+      descripcion: {
+        type: Sequelize.STRING,
         allowNull: false
       },
       estado: {
@@ -19,11 +23,15 @@ module.exports = {
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
-      }, //este no se cambia
+      },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
-      }, 
+      },
+      costo: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
       id_producto: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -32,18 +40,10 @@ module.exports = {
             key: 'id'
         }
       },
-      id_sucursal: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'sucursales',
-            key: 'id'
-        }
-      },
     });
     
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('producto_sucursales');
+    await queryInterface.dropTable('historial_costos');
   }
 };

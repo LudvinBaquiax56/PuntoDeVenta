@@ -5,6 +5,9 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class producto_sucursales extends Model {
     static associate(models) {
+      producto_sucursales.hasMany(models.historial_ajustes,{
+        foreignKey: 'id_producto_sucursal'
+      })
       producto_sucursales.belongsTo(models.productos,{
         foreignKey: 'id_producto'
       })

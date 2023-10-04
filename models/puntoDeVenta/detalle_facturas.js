@@ -22,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false
       },
+      ganancia: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
       estado: {
         type: DataTypes.INTEGER,
         allowNull: false
