@@ -11,6 +11,14 @@ const marcaController = require('../controllers/puntoDeVenta/marcaController');
 const rolController = require('../controllers/puntoDeVenta/rolController');
 const productoController = require('../controllers/puntoDeVenta/productoController');
 const usuarioController = require('../controllers/puntoDeVenta/usuarioController');
+const facturaController = require('../controllers/puntoDeVenta/facturaController');
+const compraController = require('../controllers/puntoDeVenta/compraController');
+const detalleFacturaController = require('../controllers/puntoDeVenta/detalleFacturaController');
+const detalleCompraController = require('../controllers/puntoDeVenta/detalleCompraController');
+const productoSucursalController = require('../controllers/puntoDeVenta/productoSucursalController');
+const historialPrecioController = require('../controllers/puntoDeVenta/historialPrecioController');
+const historialCostoController = require('../controllers/puntoDeVenta/historialCostoController');
+const historialAjusteController = require('../controllers/puntoDeVenta/historialAjusteController');
 
 //RUTAS
 
@@ -48,7 +56,8 @@ module.exports = (app) => {
 
      //ROLES
     router.get('/rol/find', rolController.find);
-    router.post('/rol/create', rolController.create);        router.put('/rol/update', rolController.update);
+    router.post('/rol/create', rolController.create);        
+    router.put('/rol/update', rolController.update);
 
     //PRODUCTOS
     router.get('/producto/find', productoController.find);
@@ -60,7 +69,43 @@ module.exports = (app) => {
     router.post('/usuario/create', usuarioController.create);
     router.put('/usuario/update', usuarioController.update);
 
+    //FACTURAS
+    router.get('/factura/find', facturaController.find);
+    router.post('/factura/create', facturaController.create);
+    router.put('/factura/update', facturaController.update);
 
+    //COMPRAS
+    router.get('/compra/find', compraController.find);
+    router.post('/compra/create', compraController.create);
+    router.put('/compra/update', compraController.update);
+
+    //DETALLE FACTURAS
+    router.get('/detalleFactura/find', detalleFacturaController.find);
+    router.post('/detalleFactura/create', detalleFacturaController.create);
+    router.put('/detalleFactura/update', detalleFacturaController.update);
+
+    //DETALLE COMPRAS
+    router.get('/detalleCompra/find', detalleCompraController.find);
+    router.post('/detalleCompra/create', detalleCompraController.create);
+    router.put('/detalleCompra/update', detalleCompraController.update);
+
+    //PRODUCTO SUCURSALES
+    router.get('/productoSucursal/find', productoSucursalController.find);
+    router.post('/productoSucursal/create', productoSucursalController.create);
+    router.put('/productoSucursal/update', productoSucursalController.update);
+
+    //HISTORIAL PRECIOS
+    router.get('/historialPrecio/find', historialPrecioController.find);
+    router.post('/historialPrecio/create', historialPrecioController.create);
+   
+    //HISTORIAL COSTOS
+    router.get('/historialCosto/find', historialCostoController.find);
+    router.post('/historialCosto/create', historialCostoController.create);
+   
+    //HISTORIAL AJUSTES
+    router.get('/historialAjuste/find', historialAjusteController.find);
+    router.post('/historialAjuste/create', historialAjusteController.create);
+   
 
 
     app.use('/', router);
