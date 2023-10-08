@@ -1,14 +1,14 @@
 'use strict'
 const Sequelize     = require('sequelize');
 const db = require("../../models");
-const Factura = db.facturas;
+const Producto_sucursal = db.producto_sucursales;
 const moment = require('moment');
 const axios = require('axios')
 const { Op } = require("sequelize");
 
 module.exports = {
     find (req, res) {
-        return Factura.findAll() 
+        return Producto_sucursal.findAll() 
         .then(cuenta => res.status(200).send(cuenta))
         .catch(error => res.status(400).send(error))
     },
@@ -17,20 +17,15 @@ module.exports = {
     create (req, res) {
         let datos = req.body //Serializar los datos
         const datos_ingreso = { //Objeto
-            no_factura: datos.no_factura,
-            fecha: datos.fecha,
-            subtotal: datos.subtotal,
-            descuento: datos.descuento,
-            total: datos.total,
+            existencia: datos.existencia,
             estado: 1,
-            id_cliente: datos.id_cliente,
-            id_sucursal: datos.id_sucursal,
-            id_usuario: datos.id_usuario
+            id_producto: datos.id_producto,
+            id_sucursal: datos.id_sucursal
         };
   
-        Factura.create(datos_ingreso)
-        .then(facturas => {
-            res.send(facturas);
+        Producto_sucursal.create(datos_ingreso)
+        .then(producto_sucursales => {
+            res.send(producto_sucursales);
         })
         .catch(error => {
             console.log(error)
@@ -40,17 +35,12 @@ module.exports = {
   
       update (req, res) {
         let datos = req.body
-          Factura.update(
+          Producto_sucursal.update(
             { 
-              no_factura: datos.no_factura,
-              fecha: datos.fecha,
-              subtotal: datos.subtotal,
-              descuento: datos.descuento,
-              total: datos.total,
-              estado: 1,
-              id_cliente: datos.id_cliente,
-              id_sucursal: datos.id_sucursal,
-              id_usuario: datos.id_usuario
+                existencia: datos.existencia,
+                estado: 1,
+                id_producto: datos.id_producto,
+                id_sucursal: datos.id_sucursal
             },
             { 
               where: { 
@@ -58,7 +48,7 @@ module.exports = {
               }
             }
           )
-          .then(facturas => res.status(200).send('El registro ha sido actualizado'))
+          .then(producto_sucursales => res.status(200).send('El registro ha sido actualizado'))
           .catch(error => {
               console.log(error)
               return res.status(500).json({ error: 'Error al actualizar' });

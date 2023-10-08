@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   facturas.init({
-    no_factura: {
+     no_factura: {
         type: DataTypes.STRING,
         allowNull: false
       },
