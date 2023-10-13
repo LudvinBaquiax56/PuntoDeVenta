@@ -10,7 +10,6 @@ module.exports = {
       },
       no_factura: {
         type: Sequelize.STRING,
-        allowNull: false
       },
       fecha: {
         type: Sequelize.STRING,

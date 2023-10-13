@@ -11,9 +11,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   clientes.init({
-    dpi: {
+      dpi: {
         type: DataTypes.STRING,
-        allowNull: false
       },
       nit: {
         type: DataTypes.STRING,
@@ -29,15 +28,12 @@ module.exports = (sequelize, DataTypes) => {
       },
       telefono: {
         type: DataTypes.STRING,
-        allowNull: false
       },
       email: {
         type: DataTypes.STRING,
-        allowNull: false
       },
       direccion: {
         type: DataTypes.STRING,
-        allowNull: false
       },
       puntos_privilegio: {
         type: DataTypes.INTEGER,

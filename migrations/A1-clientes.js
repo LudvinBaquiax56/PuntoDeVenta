@@ -10,7 +10,6 @@ module.exports = {
       },
       dpi: {
         type: Sequelize.STRING,
-        allowNull: false
       },
       nit: {
         type: Sequelize.STRING,
@@ -26,15 +25,12 @@ module.exports = {
       },
       telefono: {
         type: Sequelize.STRING,
-        allowNull: false
       },
       email: {
         type: Sequelize.STRING,
-        allowNull: false
       },
       direccion: {
         type: Sequelize.STRING,
-        allowNull: false
       },
       puntos_privilegio: {
         type: Sequelize.INTEGER,
