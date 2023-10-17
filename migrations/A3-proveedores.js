@@ -22,11 +22,9 @@ module.exports = {
       },
       email: {
         type: Sequelize.STRING,
-        allowNull: false
       },
       direccion: {
         type: Sequelize.STRING,
-        allowNull: false
       },
         estado: {
           type: Sequelize.INTEGER,

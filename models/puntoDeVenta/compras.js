@@ -22,7 +22,6 @@ module.exports = (sequelize, DataTypes) => {
   compras.init({
     no_factura: {
         type: DataTypes.STRING,
-        allowNull: false
       },
       fecha: {
         type: DataTypes.STRING,
