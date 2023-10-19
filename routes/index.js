@@ -19,6 +19,7 @@ const productoSucursalRoute = require('./rutasPuntoDeVenta/productoSucursalRoute
 const historialPrecioRoute = require('./rutasPuntoDeVenta/historialPrecioRoute');
 const historialCostoRoute = require('./rutasPuntoDeVenta/historialCostoRoute');
 const historialAjusteRoute = require('./rutasPuntoDeVenta/historialAjusteRoute');
+const procedimientoRoute = require('./rutasProcedimientos/ProcProductoRuta');
 
 //RUTAS
 
@@ -41,6 +42,9 @@ module.exports = (app) => {
     app.use('/historialPrecio', historialPrecioRoute);
     app.use('/historialCosto', historialCostoRoute);
     app.use('/historialAjuste', historialAjusteRoute);
+
+    
+    app.use('/producto', procedimientoRoute);
 
     app.use('/', router);
 
