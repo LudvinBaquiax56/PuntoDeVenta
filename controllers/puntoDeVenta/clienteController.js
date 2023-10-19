@@ -24,7 +24,7 @@ module.exports = {
             telefono: datos.telefono,
             email: datos.email,
             direccion: datos.direccion,
-            puntos_privilegio: datos.puntos_privilegio,
+            puntos_privilegio: 0,
             estado: 1
         };
   
