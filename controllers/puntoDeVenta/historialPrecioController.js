@@ -9,10 +9,16 @@ const { Op } = require("sequelize");
 module.exports = {
     find (req, res) {
         return Historial_precio.findAll() 
-        .then(cuenta => res.status(200).send(cuenta))
+        .then(historial_precios => res.status(200).send(historial_precios))
         .catch(error => res.status(400).send(error))
     },
 
+    findById (req, res) {
+        let id = req.body.id
+        return Historial_precio.findByPk(id)
+        .then(historial_precios => res.status(200).send(historial_precios))
+        .catch(error => res.status(400).send(error))
+      }, 
 
     create (req, res) {
         let datos = req.body //Serializar los datos
