@@ -13,11 +13,14 @@ module.exports = {
         .catch(error => res.status(400).send(error))
     },
 
-    findById (req, res) {
-      let id = req.body.id
-      return Rol.findByPk(id)
-      .then(roles => res.status(200).send(roles))
-      .catch(error => res.status(400).send(error))
+    async findById (req, res) {
+      console.log(req.params.id)
+      let id = req.params.id;
+      const roles = await Rol.findByPk(id);
+        if (!roles) {
+          return res.status(404).json({ error: 'Dato no encontrado' });
+        }
+        res.status(200).json(roles);
     }, 
 
     create (req, res) {
