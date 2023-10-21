@@ -13,12 +13,15 @@ module.exports = {
         .catch(error => res.status(400).send(error))
     },
 
-    findById (req, res) {
-      let id = req.body.id
-      return Detalle_compra.findByPk(id)
-      .then(detalle_compras => res.status(200).send(detalle_compras))
-      .catch(error => res.status(400).send(error))
-    }, 
+    async findById (req, res) {
+      console.log(req.params.id)
+      let id = req.params.id;
+      const detalle_compras = await Detalle_compra.findByPk(id);
+        if (!detalle_compras) {
+          return res.status(404).json({ error: 'Dato no encontrado' });
+        }
+        res.status(200).json(detalle_compras);
+    },
 
     create (req, res) {
         let datos = req.body //Serializar los datos

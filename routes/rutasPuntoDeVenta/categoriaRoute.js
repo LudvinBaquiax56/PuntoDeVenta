@@ -4,7 +4,7 @@ const router = Router();
 const categoriaController = require('../../controllers/puntoDeVenta/categoriaController');
 
     router.get('/find', categoriaController.find);
-    router.get('/findById', categoriaController.findById);
+    router.get('/findById/:id', categoriaController.findById);
     router.post('/create', categoriaController.create);
     router.put('/update', categoriaController.update);
 
