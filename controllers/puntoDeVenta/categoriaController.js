@@ -8,7 +8,9 @@ const { Op } = require("sequelize");
 
 module.exports = {
     find (req, res) {
-        return Categoria.findAll() 
+        return Categoria.findAll({
+          where: {estado: 1}
+        }) 
         .then(categorias => res.status(200).send(categorias))
         .catch(error => res.status(400).send(error))
     },
@@ -16,7 +18,12 @@ module.exports = {
     async findById (req, res) {
       console.log(req.params.id)
       let id = req.params.id;
-      const categorias = await Categoria.findByPk(id);
+      const categorias = await Categoria.findOne({
+        where: {
+          id: id,
+          estado: 1
+        }
+      });
         if (!categorias) {
           return res.status(404).json({ error: 'Dato no encontrado' });
         }
@@ -62,9 +69,18 @@ module.exports = {
           });
       },
 
-      delete (req, res) {
+      async delete (req, res) {
         console.log(req.params.id)
         let id = req.params.id;
+        const categorias = await Categoria.findOne({
+          where: {
+            id: id,
+            estado: 1
+          }
+        });
+          if (!categorias) {
+            return res.status(404).json({ error: 'Dato no encontrado' });
+          }
           Categoria.update(
             {estado: 0},
             {where: {id: id}}

@@ -8,7 +8,9 @@ const { Op } = require("sequelize");
 
 module.exports = {
     find (req, res) {
-        return Detalle_compra.findAll() 
+        return Detalle_compra.findAll({
+          where: {estado: 1}
+        }) 
         .then(detalle_compras => res.status(200).send(detalle_compras))
         .catch(error => res.status(400).send(error))
     },
@@ -16,7 +18,12 @@ module.exports = {
     async findById (req, res) {
       console.log(req.params.id)
       let id = req.params.id;
-      const detalle_compras = await Detalle_compra.findByPk(id);
+      const detalle_compras = await Detalle_compra.findOne({
+        where: {
+          id: id,
+          estado: 1
+        }
+      });
         if (!detalle_compras) {
           return res.status(404).json({ error: 'Dato no encontrado' });
         }
@@ -66,9 +73,18 @@ module.exports = {
           });
       },
 
-      delete (req, res) {
+      async delete (req, res) {
         console.log(req.params.id)
         let id = req.params.id;
+        const detalle_compras = await Detalle_compra.findOne({
+          where: {
+            id: id,
+            estado: 1
+          }
+        });
+          if (!detalle_compras) {
+            return res.status(404).json({ error: 'Dato no encontrado' });
+          }
           Detalle_compra.update(
             {estado: 0},
             {where: {id: id}}

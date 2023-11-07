@@ -2,7 +2,7 @@ use proyectofinal1;
 
 /* SE UTILIZA PARA ELIMINAR UN PROCEDIMIENTO (NO UTILIZAR SIN PREVIA AUTORIZACIÓN)
 DROP PROCEDURE IF EXISTS SP_Productos_ExistenciaMenor20;
-DROP VIEW nombre_de_la_vista;*/
+DROP VIEW SP_Productos_CantidadExistenciaMenor20;*/
 
 
 DELIMITER //
@@ -42,25 +42,23 @@ END
 
 
 DELIMITER //
-CREATE PROCEDURE SP_Productos_ExistenciaMenor20()
-BEGIN
+CREATE VIEW VW_Productos_ExistenciaMenor20
+AS
     SELECT productos.codigo, productos.nombre, producto_sucursales.existencia FROM productos 
     INNER JOIN producto_sucursales ON  productos.id = producto_sucursales.id_producto
     WHERE existencia < 20;
-END
 //DELIMITER ;
-/*CALL SP_Productos_ExistenciaMenor20();*/
+/*SELECT * FROM VW_Productos_ExistenciaMenor20;*/
 
 
 DELIMITER //
-CREATE PROCEDURE SP_Productos_CantidadExistenciaMenor20()
-BEGIN
+CREATE VIEW VW_Productos_CantidadExistenciaMenor20
+AS
     SELECT COUNT(*) As cantidadProductos FROM productos 
     INNER JOIN producto_sucursales ON  productos.id = producto_sucursales.id_producto
     WHERE existencia < 20;
-END
 //DELIMITER ;
-/*CALL SP_Productos_CantidadExistenciaMenor20();*/
+/*SELECT * FROM VW_Productos_CantidadExistenciaMenor20;*/
 
 
 DELIMITER //

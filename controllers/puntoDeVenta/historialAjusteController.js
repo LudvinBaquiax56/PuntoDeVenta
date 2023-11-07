@@ -8,7 +8,9 @@ const { Op } = require("sequelize");
 
 module.exports = {
     find (req, res) {
-        return Historial_ajuste.findAll() 
+        return Historial_ajuste.findAll({
+            where: {estado: 1}
+          }) 
         .then(historial_ajustes => res.status(200).send(historial_ajustes))
         .catch(error => res.status(400).send(error))
     },
@@ -16,7 +18,12 @@ module.exports = {
     async findById (req, res) {
         console.log(req.params.id)
         let id = req.params.id;
-        const historial_ajustes = await Historial_ajuste.findByPk(id);
+        const historial_ajustes = await Historial_ajuste.findOne({
+            where: {
+              id: id,
+              estado: 1
+            }
+          });
           if (!historial_ajustes) {
             return res.status(404).json({ error: 'Dato no encontrado' });
           }

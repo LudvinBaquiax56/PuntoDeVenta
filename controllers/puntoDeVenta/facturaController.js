@@ -8,7 +8,9 @@ const { Op } = require("sequelize");
 
 module.exports = {
     find (req, res) {
-        return Factura.findAll() 
+        return Factura.findAll({
+          where: {estado: 1}
+        }) 
         .then(facturas => res.status(200).send(facturas))
         .catch(error => res.status(400).send(error))
     },
@@ -16,7 +18,12 @@ module.exports = {
     async findById (req, res) {
       console.log(req.params.id)
       let id = req.params.id;
-      const facturas = await Factura.findByPk(id);
+      const facturas = await Factura.findOne({
+        where: {
+          id: id,
+          estado: 1
+        }
+      });
         if (!facturas) {
           return res.status(404).json({ error: 'Dato no encontrado' });
         }
@@ -74,9 +81,18 @@ module.exports = {
           });
       },
 
-      delete (req, res) {
+      async delete (req, res) {
         console.log(req.params.id)
         let id = req.params.id;
+        const facturas = await Factura.findOne({
+          where: {
+            id: id,
+            estado: 1
+          }
+        });
+          if (!facturas) {
+            return res.status(404).json({ error: 'Dato no encontrado' });
+          }
           Factura.update(
             {estado: 0},
             {where: {id: id}}
