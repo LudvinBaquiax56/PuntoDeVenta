@@ -1,7 +1,9 @@
 use proyectofinal1;
 
 /* SE UTILIZA PARA ELIMINAR UN PROCEDIMIENTO (NO UTILIZAR SIN PREVIA AUTORIZACIÓN)
-DROP PROCEDURE IF EXISTS SP_Clientes_ComprasEnGeneral;*/
+DROP PROCEDURE IF EXISTS SP_Productos_ExistenciaMenor20;
+DROP VIEW nombre_de_la_vista;*/
+
 
 DELIMITER //
 CREATE PROCEDURE SP_Productos_MasVendidos(
@@ -37,6 +39,28 @@ BEGIN
 END 
 //DELIMITER ;
 /*CALL SP_Productos_MenosVendidos('2023-05-01', '2023-11-01');*/
+
+
+DELIMITER //
+CREATE PROCEDURE SP_Productos_ExistenciaMenor20()
+BEGIN
+    SELECT productos.codigo, productos.nombre, producto_sucursales.existencia FROM productos 
+    INNER JOIN producto_sucursales ON  productos.id = producto_sucursales.id_producto
+    WHERE existencia < 20;
+END
+//DELIMITER ;
+/*CALL SP_Productos_ExistenciaMenor20();*/
+
+
+DELIMITER //
+CREATE PROCEDURE SP_Productos_CantidadExistenciaMenor20()
+BEGIN
+    SELECT COUNT(*) As cantidadProductos FROM productos 
+    INNER JOIN producto_sucursales ON  productos.id = producto_sucursales.id_producto
+    WHERE existencia < 20;
+END
+//DELIMITER ;
+/*CALL SP_Productos_CantidadExistenciaMenor20();*/
 
 
 DELIMITER //
@@ -92,7 +116,16 @@ END
 
 
 DELIMITER //
-CREATE PROCEDURE SP_Compras(
+CREATE VIEW VW_Clientes_General
+AS
+   SELECT nit, nombre, apellido, puntos_privilegio
+    FROM clientes;
+//DELIMITER ;
+SELECT * FROM VW_Clientes_General;
+
+
+DELIMITER //
+CREATE PROCEDURE SP_Compras_General(
     IN fecha_inicio DATE,
     IN fecha_fin DATE
 )
@@ -116,7 +149,7 @@ END
 
 
 DELIMITER //
-CREATE PROCEDURE SP_Ventas(
+CREATE PROCEDURE SP_Ventas_General(
     IN fecha_inicio DATE,
     IN fecha_fin DATE
 )
@@ -134,7 +167,7 @@ BEGIN
     INNER JOIN productos ON detalle_facturas.id_producto = productos.id
     INNER JOIN historial_precios ON productos.id = historial_precios.id_producto
     ORDER BY facturas.fecha;
-END 
+END 	
 //DELIMITER ;
 /*CALL SP_Ventas('2023-05-01', '2023-11-01');*/
 

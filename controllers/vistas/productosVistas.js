@@ -1,18 +1,17 @@
 'use strict';
 
 const db = require("../../models");
-const Cliente = db.clientes;
+const Producto = db.productos;
 const { QueryTypes } = require('sequelize');
 
 module.exports = {
 
-  async PorSucursales(req, res) {
+  async ExistenciaMenor20(req, res) {
     try {
      const { sucursal } = req.params;
-      const datos = await Cliente.sequelize.query("CALL SP_Clientes_ComprasPorSucursales(:sucursal);", {
-        replacements: {sucursal},
+      const datos = await Producto.sequelize.query("SELECT * FROM VW_Productos_ExistenciaMenor20;", {
         type: QueryTypes.SELECT,
-        model: Cliente,
+        model: Producto,
       });
       console.log(JSON.stringify(datos));
       res.status(200).json(datos);
@@ -22,13 +21,12 @@ module.exports = {
     }
   },
 
-  async DetalleCompras(req, res) {
+  async CantidadExistenciaMenor20(req, res) {
     try {
      const { cliente } = req.params;
-      const datos = await Cliente.sequelize.query("CALL SP_Clientes_DetalleCompras(:cliente);", {
-        replacements: {cliente},
+      const datos = await Producto.sequelize.query("SELECT * FROM VW_Productos_CantidadExistenciaMenor20;", {
         type: QueryTypes.SELECT,
-        model: Cliente,
+        model: Producto,
       });
       console.log(JSON.stringify(datos));
       res.status(200).json(datos);
