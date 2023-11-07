@@ -67,4 +67,18 @@ module.exports = {
               return res.status(500).json({ error: 'Error al actualizar' });
           });
       },
+
+      delete (req, res) {
+        console.log(req.params.id)
+        let id = req.params.id;
+          Detalle_factura.update(
+            {estado: 0},
+            {where: {id: id}}
+          )
+          .then(detalle_facturas => res.status(200).send('El registro ha sido eliminado'))
+          .catch(error => {
+              console.log(error)
+              return res.status(500).json({ error: 'Error al eliminar' });
+          });
+      },
 };

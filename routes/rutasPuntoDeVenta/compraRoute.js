@@ -7,5 +7,6 @@ const compraController = require('../../controllers/puntoDeVenta/compraControlle
     router.get('/findById/:id', compraController.findById);
     router.post('/create', compraController.create);
     router.put('/update', compraController.update);
+    router.put('/delete/:id', compraController.delete);
 
 module.exports = router;

@@ -7,5 +7,6 @@ const facturaController = require('../../controllers/puntoDeVenta/facturaControl
     router.get('/findById/:id', facturaController.findById);
     router.post('/create', facturaController.create);
     router.put('/update', facturaController.update);
+    router.put('/delete/:id', facturaController.delete);
 
 module.exports = router;

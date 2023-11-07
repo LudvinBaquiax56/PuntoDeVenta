@@ -68,4 +68,18 @@ module.exports = {
               return res.status(500).json({ error: 'Error al actualizar' });
           });
       },
+
+      delete (req, res) {
+        console.log(req.params.id)
+        let id = req.params.id;
+          Marca.update(
+            {estado: 0},
+            {where: {id: id}}
+          )
+          .then(marcas => res.status(200).send('El registro ha sido eliminado'))
+          .catch(error => {
+              console.log(error)
+              return res.status(500).json({ error: 'Error al eliminar' });
+          });
+      },
 };
