@@ -4,8 +4,8 @@ const router = Router();
 
 const productosProcedimientos = require('../../controllers/procedimientosAlmacenados/productosProcedimientos');
 
-    router.get('/ExistenciaSucursal', productosProcedimientos.ExistenciaSucursal);
-    router.get('/MasVendidos', productosProcedimientos.MasVendidos);
-    router.get('/MenosVendidos', productosProcedimientos.MenosVendidos);
+    router.get('/ExistenciaSucursal/:sucursal', productosProcedimientos.ExistenciaSucursal);
+    router.get('/MasVendidos/:fechaInicio,:fechaFin', productosProcedimientos.MasVendidos);
+    router.get('/MenosVendidos/:fechaInicio,:fechaFin', productosProcedimientos.MenosVendidos);
 
 module.exports = router;

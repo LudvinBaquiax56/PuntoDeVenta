@@ -8,7 +8,7 @@ module.exports = {
 
   async Compras(req, res) {
     try {
-     const { fechaInicio, fechaFin } = req.body;
+     const { fechaInicio, fechaFin } = req.params;
       const datos = await Compra.sequelize.query("CALL SP_Compras(:fechaInicio, :fechaFin);", {
         replacements: {fechaInicio, fechaFin},
         type: QueryTypes.SELECT,

@@ -3,7 +3,7 @@ const router = Router();
 
 const clientesProcedimientos = require('../../controllers/procedimientosAlmacenados/clientesProcedimientos');
 
-    router.get('/ComprasPorSucursal', clientesProcedimientos.PorSucursales);
-    router.get('/DetalleCompras', clientesProcedimientos.DetalleCompras);
+    router.get('/ComprasPorSucursal/:sucursal', clientesProcedimientos.PorSucursales);
+    router.get('/DetalleCompras/:cliente', clientesProcedimientos.DetalleCompras);
 
 module.exports = router;

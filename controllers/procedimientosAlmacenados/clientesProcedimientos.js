@@ -8,7 +8,7 @@ module.exports = {
 
   async PorSucursales(req, res) {
     try {
-     const { sucursal } = req.body;
+     const { sucursal } = req.params;
       const datos = await Cliente.sequelize.query("CALL SP_Clientes_ComprasPorSucursales(:sucursal);", {
         replacements: {sucursal},
         type: QueryTypes.SELECT,
@@ -24,7 +24,7 @@ module.exports = {
 
   async DetalleCompras(req, res) {
     try {
-     const { cliente } = req.body;
+     const { cliente } = req.params;
       const datos = await Cliente.sequelize.query("CALL SP_Clientes_DetalleCompras(:cliente);", {
         replacements: {cliente},
         type: QueryTypes.SELECT,
