@@ -8,7 +8,6 @@ module.exports = {
 
   async ExistenciaMenor20(req, res) {
     try {
-     const { sucursal } = req.params;
       const datos = await Producto.sequelize.query("SELECT * FROM VW_Productos_ExistenciaMenor20;", {
         type: QueryTypes.SELECT,
         model: Producto,
@@ -23,7 +22,6 @@ module.exports = {
 
   async CantidadExistenciaMenor20(req, res) {
     try {
-     const { cliente } = req.params;
       const datos = await Producto.sequelize.query("SELECT * FROM VW_Productos_CantidadExistenciaMenor20;", {
         type: QueryTypes.SELECT,
         model: Producto,

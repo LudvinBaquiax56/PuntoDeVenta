@@ -8,7 +8,6 @@ module.exports = {
 
   async General(req, res) {
     try {
-     const { sucursal } = req.params;
       const datos = await Cliente.sequelize.query("SELECT * FROM VW_Clientes_General;", {
         type: QueryTypes.SELECT,
         model: Cliente,
