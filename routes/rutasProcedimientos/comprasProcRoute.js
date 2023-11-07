@@ -3,6 +3,6 @@ const router = Router();
 
 const comprasProcedimientos = require('../../controllers/procedimientosAlmacenados/comprasProcedimientos');
 
-    router.get('/Compras', comprasProcedimientos.Compras);
+    router.get('/Compras/:fechaInicio,:fechaFin', comprasProcedimientos.Compras);
 
 module.exports = router;

@@ -8,7 +8,7 @@ module.exports = {
 
   async ExistenciaSucursal(req, res) {
     try {
-     const { sucursal } = req.body;
+     const { sucursal } = req.params;
       const datos = await Producto.sequelize.query("CALL SP_Productos_ExistenciaSucursal(:sucursal);", {
         replacements: {sucursal},
         type: QueryTypes.SELECT,
@@ -24,7 +24,7 @@ module.exports = {
 
   async MasVendidos(req, res) {
     try {
-     const { fechaInicio, fechaFin } = req.body;
+     const { fechaInicio, fechaFin } = req.params;
       const datos = await Producto.sequelize.query("CALL SP_Productos_MasVendidos(:fechaInicio, :fechaFin);", {
         replacements: {fechaInicio, fechaFin},
         type: QueryTypes.SELECT,
@@ -40,7 +40,7 @@ module.exports = {
 
   async MenosVendidos(req, res) {
     try {
-     const { fechaInicio, fechaFin } = req.body;
+     const { fechaInicio, fechaFin } = req.params;
       const datos = await Producto.sequelize.query("CALL SP_Productos_MenosVendidos(:fechaInicio, :fechaFin);", {
         replacements: {fechaInicio, fechaFin},
         type: QueryTypes.SELECT,
