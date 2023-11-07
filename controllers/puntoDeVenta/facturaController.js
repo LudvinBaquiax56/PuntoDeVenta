@@ -15,6 +15,14 @@ module.exports = {
         .catch(error => res.status(400).send(error))
     },
 
+    findAnulados (req, res) {
+      return Factura.findAll({
+        where: {estado: 0}
+      }) 
+      .then(facturas => res.status(200).send(facturas))
+      .catch(error => res.status(400).send(error))
+  },
+
     async findById (req, res) {
       console.log(req.params.id)
       let id = req.params.id;

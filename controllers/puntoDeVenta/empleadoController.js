@@ -15,6 +15,14 @@ module.exports = {
         .catch(error => res.status(400).send(error))
     },
 
+    findDesactivos (req, res) {
+      return Empleado.findAll({
+        where: {estado: 0}
+      }) 
+      .then(empleados => res.status(200).send(empleados))
+      .catch(error => res.status(400).send(error))
+  },
+
     async findById (req, res) {
       console.log(req.params.id)
       let id = req.params.id;
