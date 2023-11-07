@@ -19,12 +19,16 @@ const productoSucursalRoute = require('./rutasPuntoDeVenta/productoSucursalRoute
 const historialPrecioRoute = require('./rutasPuntoDeVenta/historialPrecioRoute');
 const historialCostoRoute = require('./rutasPuntoDeVenta/historialCostoRoute');
 const historialAjusteRoute = require('./rutasPuntoDeVenta/historialAjusteRoute');
-const procedimientoRoute = require('./rutasProcedimientos/ProcProductoRuta');
+const clientesProcRoute = require('./rutasProcedimientos/clientesProcRoute');
+const productosProcRoute = require('./rutasProcedimientos/productosProcRoute');
+const comprasProcRoute = require('./rutasProcedimientos/comprasProcRoute');
+const ventasProcRoute = require('./rutasProcedimientos/ventasProcRoute');
 
 //RUTAS
 
 module.exports = (app) => {
     
+    //TABLAS
     app.use('/cliente',clienteRoute);
     app.use('/empleado', empleadoRoute);
     app.use('/proveedor', proveedorRoute);
@@ -43,8 +47,11 @@ module.exports = (app) => {
     app.use('/historialCosto', historialCostoRoute);
     app.use('/historialAjuste', historialAjusteRoute);
 
-    
-    app.use('/producto', procedimientoRoute);
+    //PROCEDIMIENTOS ALMACENADOS
+    app.use('/clientes', clientesProcRoute);
+    app.use('/productos', productosProcRoute);
+    app.use('/compras', comprasProcRoute);
+    app.use('/ventas', ventasProcRoute);
 
     app.use('/', router);
 
