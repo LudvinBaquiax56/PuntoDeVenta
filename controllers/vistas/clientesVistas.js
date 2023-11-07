@@ -1,18 +1,16 @@
 'use strict';
 
 const db = require("../../models");
-const Factura = db.facturas;
+const Cliente = db.clientes;
 const { QueryTypes } = require('sequelize');
 
 module.exports = {
 
-  async Ventas(req, res) {
+  async General(req, res) {
     try {
-     const { fechaInicio, fechaFin } = req.params;
-      const datos = await Factura.sequelize.query("CALL SP_Ventas_General(:fechaInicio, :fechaFin);", {
-        replacements: {fechaInicio, fechaFin},
+      const datos = await Cliente.sequelize.query("SELECT * FROM VW_Clientes_General;", {
         type: QueryTypes.SELECT,
-        model: Factura,
+        model: Cliente,
       });
       console.log(JSON.stringify(datos));
       res.status(200).json(datos);
