@@ -4,6 +4,7 @@ const db = require("../../models");
 const Detalle_factura = db.detalle_facturas;
 const Factura = db.facturas;
 const Producto = db.productos;
+const Historial_precio = db.historial_precios;
 const moment = require('moment');
 const axios = require('axios')
 const { Op } = require("sequelize");
@@ -54,44 +55,59 @@ module.exports = {
                     if (!producto) {
                         return res.status(404).json({ error: 'Producto no encontrado' });
                     }
-    
-                    const datos_detalle = { 
-                        cantidad: datos.cantidad,
-                        subtotal: datos.subtotal, //P
-                        ganancia: datos.ganancia, //P
-                        estado: 1,
-                        id_factura: datos.id_factura,
-                        id_producto: datos.id_producto
-                    };
-                    Detalle_factura.create(datos_detalle)
-                    .then(async detalle => {
-                      const subtotalFac = parseFloat(factura.subtotal) + parseFloat(datos.subtotal);
-                      const total = subtotalFac - ((factura.descuento / 100) * subtotalFac);
-                        const options = {
-                            'method': 'PUT',
-                            'url': 'http://localhost:3000/factura/update',
-                            'headers': {
-                                'Content-Type': 'application/json'
-                            },
-                            data: {
-                                id: datos.id_factura,
-                                subtotal: subtotalFac,
-                                total: total
-                            }
-                        };
-                        try {
-                            const result = await axios(options);
-                            const resultado = result.data;
-                            res.status(200).send(resultado);
-                        } catch (e) {
-                            res.status(500).send("Error con el servidor");
-                        }
+                    
+                    Historial_precio.findOne({
+                      where: {
+                        id_producto: datos.id_producto,
+                        estado: 1
+                      },
+                      order: [['createdAt', 'DESC']],
+                      limit: 1
                     })
-                    .catch(error => {
-                        console.log(error)
-                        return res.status(500).json({ error: 'Error al insertar' });
-                    });
-                })
+                    .then(precios => {
+                        if (!precios) {
+                            return res.status(404).json({ error: 'Precio no encontrado' });
+                        }
+                        const precioPro = precios.precio;
+                        const subtotal = precioPro * datos.cantidad;
+                        const datos_detalle = { 
+                            cantidad: datos.cantidad,
+                            subtotal: subtotal, 
+                            ganancia: datos.ganancia, //P
+                            estado: 1,
+                            id_factura: datos.id_factura,
+                            id_producto: datos.id_producto
+                        };
+                      Detalle_factura.create(datos_detalle)
+                      .then(async detalle => {
+                        const subtotalFac = parseFloat(factura.subtotal) + parseFloat(subtotal);
+                        const total = subtotalFac - ((factura.descuento / 100) * subtotalFac);
+                          const options = {
+                              'method': 'PUT',
+                              'url': 'http://localhost:3000/factura/update',
+                              'headers': {
+                                  'Content-Type': 'application/json'
+                              },
+                              data: {
+                                  id: datos.id_factura,
+                                  subtotal: subtotalFac,
+                                  total: total
+                              }
+                          };
+                          try {
+                              const result = await axios(options);
+                              const resultado = result.data;
+                              res.status(200).send(resultado);
+                          } catch (e) {
+                              res.status(500).send("Error con el servidor");
+                          }
+                      })
+                      .catch(error => {
+                          console.log(error)
+                          return res.status(500).json({ error: 'Error al insertar' });
+                      });
+                 })
+               })
             })
       },
   
