@@ -2,21 +2,37 @@
 const Sequelize     = require('sequelize');
 const db = require("../../models");
 const Factura = db.facturas;
+const Cliente = db.clientes;
 const moment = require('moment');
 const axios = require('axios')
 const { Op } = require("sequelize");
 
 module.exports = {
     find (req, res) {
-        return Factura.findAll() 
+        return Factura.findAll({
+          where: {estado: 1}
+        }) 
         .then(facturas => res.status(200).send(facturas))
         .catch(error => res.status(400).send(error))
     },
 
+    findAnulados (req, res) {
+      return Factura.findAll({
+        where: {estado: 0}
+      }) 
+      .then(facturas => res.status(200).send(facturas))
+      .catch(error => res.status(400).send(error))
+  },
+
     async findById (req, res) {
       console.log(req.params.id)
       let id = req.params.id;
-      const facturas = await Factura.findByPk(id);
+      const facturas = await Factura.findOne({
+        where: {
+          id: id,
+          estado: 1
+        }
+      });
         if (!facturas) {
           return res.status(404).json({ error: 'Dato no encontrado' });
         }
@@ -24,13 +40,23 @@ module.exports = {
     },
 
     create (req, res) {
-        let datos = req.body //Serializar los datos
-        const datos_ingreso = { //Objeto
+        let datos = req.body 
+        Cliente.findOne({
+          where: {
+            id: datos.id_cliente,
+            estado: 1
+          }
+        })
+      .then(cliente => {
+          if (!cliente) {
+              return res.status(404).json({ error: 'Cliente no encontrado' });
+          }
+        const datos_ingreso = { 
             no_factura: datos.no_factura,
-            fecha: datos.fecha,
-            subtotal: datos.subtotal,
+            fecha: new Date(),
+            subtotal: 0,
             descuento: datos.descuento,
-            total: datos.total,
+            total: 0,
             estado: 1,
             id_cliente: datos.id_cliente,
             id_sucursal: datos.id_sucursal,
@@ -45,6 +71,7 @@ module.exports = {
             console.log(error)
             return res.status(500).json({ error: 'Error al insertar' });
         });
+      })
       },
   
       update (req, res) {
@@ -52,7 +79,6 @@ module.exports = {
           Factura.update(
             { 
               no_factura: datos.no_factura,
-              fecha: datos.fecha,
               subtotal: datos.subtotal,
               descuento: datos.descuento,
               total: datos.total,
@@ -71,6 +97,29 @@ module.exports = {
           .catch(error => {
               console.log(error)
               return res.status(500).json({ error: 'Error al actualizar' });
+          });
+      },
+
+      async delete (req, res) {
+        console.log(req.params.id)
+        let id = req.params.id;
+        const facturas = await Factura.findOne({
+          where: {
+            id: id,
+            estado: 1
+          }
+        });
+          if (!facturas) {
+            return res.status(404).json({ error: 'Dato no encontrado' });
+          }
+          Factura.update(
+            {estado: 0},
+            {where: {id: id}}
+          )
+          .then(facturas => res.status(200).send('El registro ha sido eliminado'))
+          .catch(error => {
+              console.log(error)
+              return res.status(500).json({ error: 'Error al eliminar' });
           });
       },
 };

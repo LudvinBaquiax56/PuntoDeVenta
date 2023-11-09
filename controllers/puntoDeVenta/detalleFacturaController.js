@@ -2,13 +2,19 @@
 const Sequelize     = require('sequelize');
 const db = require("../../models");
 const Detalle_factura = db.detalle_facturas;
+const Factura = db.facturas;
+const Producto = db.productos;
+const Historial_precio = db.historial_precios;
+const Historial_costo = db.historial_costos;
 const moment = require('moment');
 const axios = require('axios')
 const { Op } = require("sequelize");
 
 module.exports = {
     find (req, res) {
-        return Detalle_factura.findAll() 
+        return Detalle_factura.findAll({
+          where: {estado: 1}
+        }) 
         .then(detalle_facturas => res.status(200).send(detalle_facturas))
         .catch(error => res.status(400).send(error))
     },
@@ -16,7 +22,12 @@ module.exports = {
     async findById (req, res) {
       console.log(req.params.id)
       let id = req.params.id;
-      const detalle_facturas = await Detalle_factura.findByPk(id);
+      const detalle_facturas = await Detalle_factura.findOne({
+        where: {
+          id: id,
+          estado: 1
+        }
+      });
         if (!detalle_facturas) {
           return res.status(404).json({ error: 'Dato no encontrado' });
         }
@@ -24,24 +35,96 @@ module.exports = {
     },
 
     create (req, res) {
-        let datos = req.body //Serializar los datos
-        const datos_ingreso = { //Objeto
-            cantidad: datos.cantidad,
-            subtotal: datos.subtotal,
-            ganancia: datos.ganancia,
-            estado: 1,
-            id_factura: datos.id_factura,
-            id_producto: datos.id_producto
-        };
-  
-        Detalle_factura.create(datos_ingreso)
-        .then(detalle_facturas => {
-            res.send(detalle_facturas);
-        })
-        .catch(error => {
-            console.log(error)
-            return res.status(500).json({ error: 'Error al insertar' });
-        });
+        let datos = req.body
+        Factura.findOne({
+            where: {
+              id: datos.id_factura,
+              estado: 1
+            }
+          })
+        .then(factura => {
+            if (!factura) {
+                return res.status(404).json({ error: 'Factura no encontrada' });
+            }
+            Producto.findOne({
+                where: {
+                  id: datos.id_producto,
+                  estado: 1
+                }
+            })
+                .then(producto => {
+                    if (!producto) {
+                        return res.status(404).json({ error: 'Producto no encontrado' });
+                    }
+                    Historial_precio.findOne({
+                      where: {
+                        id_producto: datos.id_producto,
+                        estado: 1
+                      },
+                      order: [['createdAt', 'DESC']],
+                      limit: 1
+                    })
+                    .then(precios => {
+                        if (!precios) {
+                            return res.status(404).json({ error: 'Precio no encontrado' });
+                        }
+
+                        Historial_costo.findOne({
+                          where: {
+                            id_producto: datos.id_producto,
+                            estado: 1
+                          },
+                          order: [['createdAt', 'DESC']],
+                          limit: 1
+                        })
+                        .then(costos => {
+                            if (!costos) {
+                                return res.status(404).json({ error: 'Costo no encontrado' });
+                            }
+                            const precioPro = precios.precio;
+                            const costoPro = costos.costo;
+                            const subtotal = precioPro * datos.cantidad;
+                            const ganancia = precioPro - costoPro;
+                            const datos_detalle = { 
+                                cantidad: datos.cantidad,
+                                subtotal: subtotal, 
+                                ganancia: ganancia, //P
+                                estado: 1,
+                                id_factura: datos.id_factura,
+                                id_producto: datos.id_producto
+                            };
+                          Detalle_factura.create(datos_detalle)
+                          .then(async detalle => {
+                              const subtotalFac = parseFloat(factura.subtotal) + parseFloat(subtotal);
+                              const total = subtotalFac - ((factura.descuento / 100) * subtotalFac);
+                                const options = {
+                                    'method': 'PUT',
+                                    'url': 'http://localhost:3000/factura/update',
+                                    'headers': {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    data: {
+                                        id: datos.id_factura,
+                                        subtotal: subtotalFac,
+                                        total: total
+                                    }
+                                };
+                                try {
+                                    const result = await axios(options);
+                                    const resultado = result.data;
+                                    res.status(200).send(resultado);
+                                } catch (e) {
+                                    res.status(500).send("Error con el servidor");
+                                }
+                            })
+                            .catch(error => {
+                                console.log(error)
+                                return res.status(500).json({ error: 'Error al insertar' });
+                            });
+                        })
+                 })
+               })
+            })
       },
   
       update (req, res) {
@@ -65,6 +148,29 @@ module.exports = {
           .catch(error => {
               console.log(error)
               return res.status(500).json({ error: 'Error al actualizar' });
+          });
+      },
+
+      async delete (req, res) {
+        console.log(req.params.id)
+        let id = req.params.id;
+        const detalle_facturas = await Detalle_factura.findOne({
+          where: {
+            id: id,
+            estado: 1
+          }
+        });
+          if (!detalle_facturas) {
+            return res.status(404).json({ error: 'Dato no encontrado' });
+          }
+          Detalle_factura.update(
+            {estado: 0},
+            {where: {id: id}}
+          )
+          .then(detalle_facturas => res.status(200).send('El registro ha sido eliminado'))
+          .catch(error => {
+              console.log(error)
+              return res.status(500).json({ error: 'Error al eliminar' });
           });
       },
 };

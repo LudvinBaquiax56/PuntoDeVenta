@@ -7,5 +7,6 @@ const sucursalController = require('../../controllers/puntoDeVenta/sucursalContr
     router.get('/findById/:id', sucursalController.findById);
     router.post('/create', sucursalController.create);
     router.put('/update', sucursalController.update);
+    router.put('/delete/:id', sucursalController.delete);
 
 module.exports = router;

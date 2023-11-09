@@ -7,5 +7,6 @@ const rolController = require('../../controllers/puntoDeVenta/rolController');
     router.get('/findById/:id', rolController.findById);
     router.post('/create', rolController.create);
     router.put('/update', rolController.update);
+    router.put('/delete/:id', rolController.delete);
 
 module.exports = router;

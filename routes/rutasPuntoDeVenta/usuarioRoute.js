@@ -7,5 +7,6 @@ const usuarioController = require('../../controllers/puntoDeVenta/usuarioControl
     router.get('/findById/:id', usuarioController.findById);
     router.post('/create', usuarioController.create);
     router.put('/update', usuarioController.update);
+    router.put('/delete/:id', usuarioController.delete);
 
 module.exports = router;

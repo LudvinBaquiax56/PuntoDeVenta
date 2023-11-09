@@ -8,7 +8,9 @@ const { Op } = require("sequelize");
 
 module.exports = {
     find (req, res) {
-        return Cliente.findAll() 
+        return Cliente.findAll({
+          where: {estado: 1}
+        }) 
         .then(clientes => res.status(200).send(clientes))
         .catch(error => res.status(400).send(error))
     },
@@ -16,7 +18,12 @@ module.exports = {
     async findById (req, res) {
       console.log(req.params.id)
       let id = req.params.id;
-      const clientes = await Cliente.findByPk(id);
+      const clientes = await Cliente.findOne({
+        where: {
+          id: id,
+          estado: 1
+        }
+      });
         if (!clientes) {
           return res.status(404).json({ error: 'Dato no encontrado' });
         }
@@ -71,6 +78,29 @@ module.exports = {
           .catch(error => {
               console.log(error)
               return res.status(500).json({ error: 'Error al actualizar' });
+          });
+      },
+
+      async delete (req, res) {
+        console.log(req.params.id)
+        let id = req.params.id;
+        const clientes = await Cliente.findOne({
+          where: {
+            id: id,
+            estado: 1
+          }
+        });
+          if (!clientes) {
+            return res.status(404).json({ error: 'Dato no encontrado' });
+          }
+          Cliente.update(
+            {estado: 0},
+            {where: {id: id}}
+          )
+          .then(clientes => res.status(200).send('El registro ha sido eliminado'))
+          .catch(error => {
+              console.log(error)
+              return res.status(500).json({ error: 'Error al eliminar' });
           });
       },
 };

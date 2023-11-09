@@ -7,5 +7,6 @@ const productoSucursalController = require('../../controllers/puntoDeVenta/produ
     router.get('/findById/:id', productoSucursalController.findById);
     router.post('/create', productoSucursalController.create);
     router.put('/update', productoSucursalController.update);
+    router.put('/delete/:id', productoSucursalController.delete);
 
 module.exports = router;

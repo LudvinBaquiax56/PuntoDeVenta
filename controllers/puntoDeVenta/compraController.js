@@ -8,7 +8,11 @@ const { Op } = require("sequelize");
 
 module.exports = {
     find (req, res) {
-        return Compra.findAll() 
+        return Compra.findAll({
+          where: {
+            estado: 1
+          }
+        }) 
         .then(compras => res.status(200).send(compras))
         .catch(error => res.status(400).send(error))
     },
@@ -16,12 +20,18 @@ module.exports = {
     async findById (req, res) {
       console.log(req.params.id)
       let id = req.params.id;
-      const compras = await Compra.findByPk(id);
+      const compras = await Compra.findOne({
+        where: {
+          id: id,
+          estado: 1
+        }
+      });
         if (!compras) {
           return res.status(404).json({ error: 'Dato no encontrado' });
         }
         res.status(200).json(compras);
     },
+    
     create (req, res) {
         let datos = req.body //Serializar los datos
         const datos_ingreso = { //Objeto
@@ -67,6 +77,29 @@ module.exports = {
           .catch(error => {
               console.log(error)
               return res.status(500).json({ error: 'Error al actualizar' });
+          });
+      },
+
+      async delete (req, res) {
+        console.log(req.params.id)
+        let id = req.params.id;
+        const compras = await Compra.findOne({
+          where: {
+            id: id,
+            estado: 1
+          }
+        });
+          if (!compras) {
+            return res.status(404).json({ error: 'Dato no encontrado' });
+          }
+          Compra.update(
+            {estado: 0},
+            {where: {id: id}}
+          )
+          .then(compras => res.status(200).send('El registro ha sido eliminado'))
+          .catch(error => {
+              console.log(error)
+              return res.status(500).json({ error: 'Error al eliminar' });
           });
       },
 };

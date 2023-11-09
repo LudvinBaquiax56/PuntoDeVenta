@@ -8,15 +8,30 @@ const { Op } = require("sequelize");
 
 module.exports = {
     find (req, res) {
-        return Empleado.findAll() 
+        return Empleado.findAll({
+          where: {estado: 1}
+        }) 
         .then(empleados => res.status(200).send(empleados))
         .catch(error => res.status(400).send(error))
     },
 
+    findDesactivos (req, res) {
+      return Empleado.findAll({
+        where: {estado: 0}
+      }) 
+      .then(empleados => res.status(200).send(empleados))
+      .catch(error => res.status(400).send(error))
+  },
+
     async findById (req, res) {
       console.log(req.params.id)
       let id = req.params.id;
-      const empleados = await Empleado.findByPk(id);
+      const empleados = await Empleado.findOne({
+        where: {
+          id: id,
+          estado: 1
+        }
+      });
         if (!empleados) {
           return res.status(404).json({ error: 'Dato no encontrado' });
         }
@@ -67,6 +82,29 @@ module.exports = {
           .catch(error => {
               console.log(error)
               return res.status(500).json({ error: 'Error al actualizar' });
+          });
+      },
+
+      async delete (req, res) {
+        console.log(req.params.id)
+        let id = req.params.id;
+        const empleados = await Empleado.findOne({
+          where: {
+            id: id,
+            estado: 1
+          }
+        });
+          if (!empleados) {
+            return res.status(404).json({ error: 'Dato no encontrado' });
+          }
+          Empleado.update(
+            {estado: 0},
+            {where: {id: id}}
+          )
+          .then(empleados => res.status(200).send('El registro ha sido eliminado'))
+          .catch(error => {
+              console.log(error)
+              return res.status(500).json({ error: 'Error al eliminar' });
           });
       },
 };

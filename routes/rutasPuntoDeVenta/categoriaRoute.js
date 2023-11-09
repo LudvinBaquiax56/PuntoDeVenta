@@ -7,5 +7,6 @@ const categoriaController = require('../../controllers/puntoDeVenta/categoriaCon
     router.get('/findById/:id', categoriaController.findById);
     router.post('/create', categoriaController.create);
     router.put('/update', categoriaController.update);
+    router.put('/delete/:id', categoriaController.delete);
 
 module.exports = router;

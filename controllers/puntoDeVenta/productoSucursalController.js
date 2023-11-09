@@ -8,7 +8,9 @@ const { Op } = require("sequelize");
 
 module.exports = {
     find (req, res) {
-        return Producto_sucursal.findAll() 
+        return Producto_sucursal.findAll({
+          where: {estado: 1}
+        }) 
         .then(producto_sucursales => res.status(200).send(producto_sucursales))
         .catch(error => res.status(400).send(error))
     },
@@ -16,7 +18,12 @@ module.exports = {
     async findById (req, res) {
       console.log(req.params.id)
       let id = req.params.id;
-      const producto_sucursales = await Producto_sucursal.findByPk(id);
+      const producto_sucursales = await Producto_sucursal.findOne({
+        where: {
+          id: id,
+          estado: 1
+        }
+      });
         if (!producto_sucursales) {
           return res.status(404).json({ error: 'Dato no encontrado' });
         }
@@ -61,6 +68,29 @@ module.exports = {
           .catch(error => {
               console.log(error)
               return res.status(500).json({ error: 'Error al actualizar' });
+          });
+      },
+
+      async delete (req, res) {
+        console.log(req.params.id)
+        let id = req.params.id;
+        const producto_sucursales = await Producto_sucursal.findOne({
+          where: {
+            id: id,
+            estado: 1
+          }
+        });
+          if (!producto_sucursales) {
+            return res.status(404).json({ error: 'Dato no encontrado' });
+          }
+          Producto_sucursal.update(
+            {estado: 0},
+            {where: {id: id}}
+          )
+          .then(producto_sucursales => res.status(200).send('El registro ha sido eliminado'))
+          .catch(error => {
+              console.log(error)
+              return res.status(500).json({ error: 'Error al eliminar' });
           });
       },
 };
