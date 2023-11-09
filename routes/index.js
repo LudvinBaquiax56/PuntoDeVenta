@@ -23,6 +23,8 @@ const clientesProcRoute = require('./rutasProcedimientos/clientesProcRoute');
 const productosProcRoute = require('./rutasProcedimientos/productosProcRoute');
 const comprasProcRoute = require('./rutasProcedimientos/comprasProcRoute');
 const ventasProcRoute = require('./rutasProcedimientos/ventasProcRoute');
+const usuariosProcRoute = require('./rutasProcedimientos/usuariosProcRoute');
+
 
 //RUTAS
 
@@ -52,6 +54,7 @@ module.exports = (app) => {
     app.use('/productos', productosProcRoute);
     app.use('/compras', comprasProcRoute);
     app.use('/ventas', ventasProcRoute);
+    app.use('/usuarios', usuariosProcRoute);
 
     app.use('/', router);
 

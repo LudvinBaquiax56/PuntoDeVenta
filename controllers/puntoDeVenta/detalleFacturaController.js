@@ -56,7 +56,6 @@ module.exports = {
                     if (!producto) {
                         return res.status(404).json({ error: 'Producto no encontrado' });
                     }
-                    
                     Historial_precio.findOne({
                       where: {
                         id_producto: datos.id_producto,
