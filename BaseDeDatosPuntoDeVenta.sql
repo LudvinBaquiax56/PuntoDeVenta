@@ -1,7 +1,7 @@
 use proyectofinal1;
 
 /* SE UTILIZA PARA ELIMINAR UN PROCEDIMIENTO (NO UTILIZAR SIN PREVIA AUTORIZACIÓN)
-DROP PROCEDURE IF EXISTS SP_Productos_ExistenciaMenor20;
+DROP PROCEDURE IF EXISTS SP_Usuarios_Login;
 DROP VIEW SP_Productos_CantidadExistenciaMenor20;*/
 
 
@@ -191,4 +191,38 @@ AS
     GROUP BY productos.id;
 //DELIMITER ;
 /*SELECT * FROM VW_Productos_ExistenciaGeneral;*/
+
+
+DELIMITER //
+CREATE PROCEDURE SP_Usuarios_Login(
+    IN usuario_p VARCHAR(255),
+    IN contraseña_p VARCHAR(255)
+)
+BEGIN
+    DECLARE v_rol VARCHAR(255);
+    DECLARE v_sucursal VARCHAR(255);
+    SELECT nombre_usuario, roles.nombre, id_empleado
+    FROM usuarios
+    INNER JOIN roles ON usuarios.id_rol = roles.id
+    WHERE nombre_usuario = usuario_p AND contraseña = contraseña_p AND usuarios.estado = 1;
+END
+//DELIMITER ;
+/*CALL SP_Usuarios_Login('Candy','123');*/
+
+
+DELIMITER //
+CREATE PROCEDURE SP_venta(
+    IN idFactura INT,
+    IN idProducto INT,
+    IN nuevoSubtotal DECIMAL(10,2),
+    IN nuevoTotal DECIMAL(10,2),
+    IN nuevaExistencia INT
+)
+BEGIN
+    UPDATE facturas SET subtotal = nuevoSubtotal WHERE id = idFactura;
+    UPDATE facturas SET Total = nuevoTotal WHERE id = idFactura;
+    UPDATE productos SET existencia = nuevaExistencia WHERE id = idProducto;
+END
+//DELIMITER ;
+/*CALL SP_Usuarios_Login('Candy','123');*/
 
