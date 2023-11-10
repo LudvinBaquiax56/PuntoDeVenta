@@ -23,6 +23,9 @@ module.exports = (sequelize, DataTypes) => {
       usuarios.belongsTo(models.roles,{
         foreignKey: 'id_rol'
       })
+      usuarios.belongsTo(models.sucursales,{
+        foreignKey: 'id_sucursal'
+      })
     }
   };
   usuarios.init({
@@ -43,6 +46,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false
       },
       id_empleado: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      id_sucursal: {
         type: DataTypes.INTEGER,
         allowNull: false
       },

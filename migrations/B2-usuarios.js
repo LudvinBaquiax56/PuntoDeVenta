@@ -44,6 +44,14 @@ module.exports = {
             key: 'id'
         }
       },
+      id_sucursal: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'sucursales',
+            key: 'id'
+        }
+      },
     });
     
   },
