@@ -209,20 +209,3 @@ END
 //DELIMITER ;
 /*CALL SP_Usuarios_Login('Candy','123');*/
 
-
-DELIMITER //
-CREATE PROCEDURE SP_venta(
-    IN idFactura INT,
-    IN idProducto INT,
-    IN nuevoSubtotal DECIMAL(10,2),
-    IN nuevoTotal DECIMAL(10,2),
-    IN nuevaExistencia INT
-)
-BEGIN
-    UPDATE facturas SET subtotal = nuevoSubtotal WHERE id = idFactura;
-    UPDATE facturas SET Total = nuevoTotal WHERE id = idFactura;
-    UPDATE productos SET existencia = nuevaExistencia WHERE id = idProducto;
-END
-//DELIMITER ;
-/*CALL SP_Usuarios_Login('Candy','123');*/
-
