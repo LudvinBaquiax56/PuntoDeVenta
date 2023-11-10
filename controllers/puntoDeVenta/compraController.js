@@ -33,11 +33,14 @@ module.exports = {
     },
     
     create (req, res) {
-        let datos = req.body //Serializar los datos
-        const datos_ingreso = { //Objeto
+        let datos = req.body
+        const fechaActual = new Date();
+        const fechaString = fechaActual.toISOString();
+
+        const datos_ingreso = {
             no_factura: datos.no_factura,
-            fecha: datos.fecha,
-            total: datos.total,
+            fecha: fechaString,
+            total: 0,
             estado: 1,
             id_proveedor: datos.id_proveedor,
             id_sucursal: datos.id_sucursal,
