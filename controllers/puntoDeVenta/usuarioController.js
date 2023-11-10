@@ -37,7 +37,8 @@ module.exports = {
             contraseña: datos.contraseña,
             estado: 1,
             id_rol: datos.id_rol,
-            id_empleado: datos.id_empleado
+            id_empleado: datos.id_empleado,
+            id_sucursal: datos.id_sucursal
         };
   
         Usuario.create(datos_ingreso)
@@ -59,7 +60,8 @@ module.exports = {
                 contraseña: datos.contraseña,
                 estado: 1,
                 id_rol: datos.id_rol,
-                id_empleado: datos.id_empleado
+                id_empleado: datos.id_empleado,
+                id_sucursal: datos.id_sucursal
             },
             { 
               where: { 

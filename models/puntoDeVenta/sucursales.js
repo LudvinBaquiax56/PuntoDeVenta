@@ -14,6 +14,9 @@ module.exports = (sequelize, DataTypes) => {
       sucursales.hasMany(models.compras, {
         foreignKey: 'id_sucursal'
       })
+      sucursales.hasMany(models.usuarios, {
+        foreignKey: 'id_sucursal'
+      })
     }
   };
   sucursales.init({

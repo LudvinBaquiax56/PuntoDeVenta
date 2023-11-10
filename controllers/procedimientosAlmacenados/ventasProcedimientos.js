@@ -20,5 +20,5 @@ module.exports = {
       console.log(error);
       res.status(500).json({ error: 'Error al llamar al procedimiento almacenado' });
     }
-  }
+  },
 };
