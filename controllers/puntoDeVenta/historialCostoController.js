@@ -30,23 +30,43 @@ module.exports = {
           res.status(200).json(historial_costos);
       },
 
-    create (req, res) {
-        let datos = req.body //Serializar los datos
-        const datos_ingreso = { //Objeto
-            fecha: datos.fecha,
-            descripcion: datos.descripcion,
-            estado: 1,
-            costo: datos.costo,
-            id_producto: datos.id_producto
-        };
-  
-        Historial_costo.create(datos_ingreso)
-        .then(historial_costos => {
-            res.send(historial_costos);
+      create(req, res) {
+        let datos = req.body;
+    
+        Historial_costo.findOne({
+            where: {
+                id_producto: datos.id_producto,
+                estado: 1
+            },
+            order: [['createdAt', 'DESC']],
+            limit: 1
         })
-        .catch(error => {
-            console.log(error)
-            return res.status(500).json({ error: 'Error al insertar' });
+        .then(costos => {
+            if (!costos) {
+                return res.status(404).json({ error: 'Costo no encontrado' });
+            } else {
+                if (datos.costo != costos.costo) {
+                    const datos_ingreso = { 
+                        fecha: new Date(),
+                        descripcion: datos.descripcion,
+                        estado: 1,
+                        costo: datos.costo,
+                        id_producto: datos.id_producto
+                    };
+      
+                    Historial_costo.create(datos_ingreso)
+                    .then(historial_costos => {
+                        res.send(historial_costos);
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        return res.status(500).json({ error: 'Error al insertar' });
+                    });
+                }else{
+                  return res.status(404).json({ error: 'Costo no modificado' });
+                }
+            }
         });
-      },
+    }
+    
 };

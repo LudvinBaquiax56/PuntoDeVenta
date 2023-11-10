@@ -34,12 +34,10 @@ module.exports = {
     
     create (req, res) {
         let datos = req.body
-        const fechaActual = new Date();
-        const fechaString = fechaActual.toISOString();
 
         const datos_ingreso = {
             no_factura: datos.no_factura,
-            fecha: fechaString,
+            fecha: new Date(),
             total: 0,
             estado: 1,
             id_proveedor: datos.id_proveedor,

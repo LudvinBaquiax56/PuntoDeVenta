@@ -30,24 +30,44 @@ module.exports = {
           res.status(200).json(historial_precios);
       },
 
-    create (req, res) {
-        let datos = req.body //Serializar los datos
-        const datos_ingreso = { //Objeto
-            fecha: datos.fecha,
-            descripcion: datos.descripcion,
-            estado: 1,
-            precio: datos.precio,
-            id_producto: datos.id_producto,
-            id_usuario: datos.id_usuario
-        };
-  
-        Historial_precio.create(datos_ingreso)
-        .then(historial_precios => {
-            res.send(historial_precios);
+      create(req, res) {
+        let datos = req.body; // Serializar los datos
+    
+        Historial_precio.findOne({
+            where: {
+                id_producto: datos.id_producto,
+                estado: 1
+            },
+            order: [['createdAt', 'DESC']],
+            limit: 1
         })
-        .catch(error => {
-            console.log(error)
-            return res.status(500).json({ error: 'Error al insertar' });
+        .then(precios => {
+            if (!precios) {
+                return res.status(404).json({ error: 'Precio no encontrado' });
+            } else {
+                if (datos.precio != precios.precio) {
+                    const datos_ingreso = { 
+                        fecha: new Date(),
+                        descripcion: datos.descripcion,
+                        estado: 1,
+                        precio: datos.precio,
+                        id_producto: datos.id_producto,
+                        id_usuario: datos.id_usuario
+                    };
+      
+                    Historial_precio.create(datos_ingreso)
+                    .then(historial_precios => {
+                        res.send(historial_precios);
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        return res.status(500).json({ error: 'Error al insertar' });
+                    });
+                }else{
+                  return res.status(404).json({ error: 'Precio no modificado' });
+                }
+            }
         });
-      },
+    }
+    
 };
