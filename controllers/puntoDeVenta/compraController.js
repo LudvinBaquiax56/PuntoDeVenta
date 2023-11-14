@@ -2,6 +2,7 @@
 const Sequelize     = require('sequelize');
 const db = require("../../models");
 const Compra = db.compras;
+const Usuario = db.usuarios;
 const moment = require('moment');
 const axios = require('axios')
 const { Op } = require("sequelize");
@@ -34,14 +35,23 @@ module.exports = {
     
     create (req, res) {
         let datos = req.body
-
+        Usuario.findOne({
+          where: {
+              id: datos.id_usuario,
+              estado: 1
+          }
+      })
+      .then(usuario => {
+          if (!usuario) {
+              return res.status(404).json({ error: 'Usuario no encontrado' });
+          } else {
         const datos_ingreso = {
             no_factura: datos.no_factura,
             fecha: new Date(),
             total: 0,
             estado: 1,
             id_proveedor: datos.id_proveedor,
-            id_sucursal: datos.id_sucursal,
+            id_sucursal: usuario.id_sucursal,
             id_usuario: datos.id_usuario
         };
   
@@ -53,6 +63,7 @@ module.exports = {
             console.log(error)
             return res.status(500).json({ error: 'Error al insertar' });
         });
+         }})
       },
 
   

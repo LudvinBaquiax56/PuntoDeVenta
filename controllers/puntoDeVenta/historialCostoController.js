@@ -63,7 +63,7 @@ module.exports = {
                         return res.status(500).json({ error: 'Error al insertar' });
                     });
                 }else{
-                  return res.status(404).json({ error: 'Costo no modificado' });
+                  return res.status(200).send('El Costo no ha sido modificado');
                 }
             }
         });
