@@ -8,9 +8,9 @@ module.exports = {
 
   async Ventas(req, res) {
     try {
-     const { fechaInicio, fechaFin } = req.params;
+      const { fechaInicio, fechaFin } = req.params;
       const datos = await Factura.sequelize.query("CALL SP_Ventas_General(:fechaInicio, :fechaFin);", {
-        replacements: {fechaInicio, fechaFin},
+        replacements: { fechaInicio, fechaFin },
         type: QueryTypes.SELECT,
         model: Factura,
       });
@@ -35,7 +35,8 @@ module.exports = {
       res.status(200).json(datos);
     } catch (error) {
       console.log(error);
-      res.status(500).json({ error: 'Error al llamar al procedimiento almacenado' });
-    }
-  },
+      res.status(500).json({ error: 'Error al llamar al procedimiento almacenado' });
+    }
+  },
+
 };
