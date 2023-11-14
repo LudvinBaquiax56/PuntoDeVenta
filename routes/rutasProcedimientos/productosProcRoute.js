@@ -10,5 +10,6 @@ const productosVistas = require('../../controllers/vistas/productosVistas');
     router.get('/MenosVendidos/:fechaInicio,:fechaFin', productosProcedimientos.MenosVendidos);
     router.get('/ExistenciaMenor20', productosVistas.ExistenciaMenor20);
     router.get('/CantidadExistenciaMenor20', productosVistas.CantidadExistenciaMenor20);
+    router.get('/General', productosVistas.General);
 
 module.exports = router;
