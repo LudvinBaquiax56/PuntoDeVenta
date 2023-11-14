@@ -193,7 +193,7 @@ DELIMITER ;
 DELIMITER //
 CREATE VIEW VW_Productos_ExistenciaGeneral
 AS
-   SELECT codigo As Codigo, nombre As Producto, SUM(producto_sucursales.existencia) As TotalExistencia
+   SELECT codigo As Codigo, nombre As Producto, SUM(producto_sucursales.existencia) As Existencia
     FROM productos
     INNER JOIN producto_sucursales ON productos.id = producto_sucursales.id_producto
     WHERE productos.estado = 1
