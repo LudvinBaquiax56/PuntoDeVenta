@@ -2,7 +2,7 @@ use proyectofinal1;
 
 /* SE UTILIZA PARA ELIMINAR UN PROCEDIMIENTO (NO UTILIZAR SIN PREVIA AUTORIZACIÓN)
 DROP PROCEDURE IF EXISTS SP_venta;
-DROP VIEW SP_Productos_CantidadExistenciaMenor20;*/
+DROP VIEW VW_Productos_ExistenciaGeneral;*/
 
 
 
@@ -90,7 +90,7 @@ AS
     GROUP BY clientes.id
     ORDER BY TotalCompras DESC;
 //DELIMITER ;
-/*SELECT * FROM VW_Clientes_ComprasEnGeneral;*/
+SELECT * FROM VW_Clientes_ComprasEnGeneral;
 
 
 DELIMITER //
