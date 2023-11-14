@@ -1,8 +1,9 @@
 use proyectofinal1;
 
 /* SE UTILIZA PARA ELIMINAR UN PROCEDIMIENTO (NO UTILIZAR SIN PREVIA AUTORIZACIÓN)
-DROP PROCEDURE IF EXISTS SP_Usuarios_Login;
+DROP PROCEDURE IF EXISTS SP_venta;
 DROP VIEW SP_Productos_CantidadExistenciaMenor20;*/
+
 
 
 DELIMITER //
@@ -11,11 +12,11 @@ CREATE PROCEDURE SP_Productos_MasVendidos(
     IN fecha_fin DATE
 )
 BEGIN
-    SELECT productos.codigo, productos.nombre, SUM(detalle_facturas.cantidad) AS TotalVendido, facturas.fecha
+    SELECT productos.codigo As Codigo, productos.nombre As Producto, SUM(detalle_facturas.cantidad) AS TotalVendido, facturas.fecha As Fecha
     FROM productos
     INNER JOIN detalle_facturas ON productos.id = detalle_facturas.id_producto
     INNER JOIN facturas ON facturas.id = detalle_facturas.id_factura
-    WHERE facturas.fecha BETWEEN fecha_inicio AND fecha_fin
+    WHERE facturas.fecha BETWEEN fecha_inicio AND fecha_fin AND productos.estado = 1
     GROUP BY productos.id
     ORDER BY TotalVendido DESC;
 END 
@@ -29,11 +30,11 @@ CREATE PROCEDURE SP_Productos_MenosVendidos(
     IN fecha_fin DATE
 )
 BEGIN
-    SELECT productos.codigo, productos.nombre, SUM(detalle_facturas.cantidad) AS TotalVendido, facturas.fecha
+    SELECT productos.codigo As Codigo, productos.nombre As Producto, SUM(detalle_facturas.cantidad) AS TotalVendido, facturas.fecha As Fecha
     FROM productos
     INNER JOIN detalle_facturas ON productos.id = detalle_facturas.id_producto
     INNER JOIN facturas ON facturas.id = detalle_facturas.id_factura
-    WHERE facturas.fecha BETWEEN fecha_inicio AND fecha_fin
+    WHERE facturas.fecha BETWEEN fecha_inicio AND fecha_fin AND productos.estado = 1
     GROUP BY productos.id
     ORDER BY TotalVendido ASC;
 END 
@@ -44,9 +45,10 @@ END
 DELIMITER //
 CREATE VIEW VW_Productos_ExistenciaMenor20
 AS
-    SELECT productos.codigo, productos.nombre, producto_sucursales.existencia FROM productos 
+    SELECT productos.codigo As Codigo, productos.nombre As Producto, producto_sucursales.existencia As Existencia
+    FROM productos 
     INNER JOIN producto_sucursales ON  productos.id = producto_sucursales.id_producto
-    WHERE existencia < 20;
+    WHERE existencia < 20 AND productos.estado = 1;
 //DELIMITER ;
 /*SELECT * FROM VW_Productos_ExistenciaMenor20;*/
 
@@ -54,9 +56,10 @@ AS
 DELIMITER //
 CREATE VIEW VW_Productos_CantidadExistenciaMenor20
 AS
-    SELECT COUNT(*) As cantidadProductos FROM productos 
+    SELECT COUNT(*) As cantidadProductos 
+    FROM productos 
     INNER JOIN producto_sucursales ON  productos.id = producto_sucursales.id_producto
-    WHERE existencia < 20;
+    WHERE existencia < 20 AND productos.estado = 1;
 //DELIMITER ;
 /*SELECT * FROM VW_Productos_CantidadExistenciaMenor20;*/
 
@@ -64,11 +67,11 @@ AS
 DELIMITER //
 CREATE PROCEDURE SP_Clientes_ComprasPorSucursales(IN sucursal INT)
 BEGIN
-    SELECT nit, clientes.nombre, COUNT(*) AS TotalCompras
+    SELECT nit As Nit, clientes.nombre As Cliente, COUNT(*) AS TotalCompras
     FROM clientes
     INNER JOIN facturas ON clientes.id = facturas.id_cliente
     INNER JOIN sucursales ON facturas.id_sucursal = sucursales.id
-    WHERE facturas.id_sucursal = sucursal
+    WHERE facturas.id_sucursal = sucursal AND clientes.estado = 1
     GROUP BY clientes.id
     ORDER BY TotalCompras DESC;
 END 
@@ -79,10 +82,11 @@ END
 DELIMITER //
 CREATE VIEW VW_Clientes_ComprasEnGeneral
 AS
-    SELECT nit, clientes.nombre, COUNT(*) AS TotalCompras
+    SELECT nit As Nit, clientes.nombre As Cliente, COUNT(*) AS TotalCompras
     FROM clientes
     INNER JOIN facturas ON clientes.id = facturas.id_cliente
     INNER JOIN sucursales ON facturas.id_sucursal = sucursales.id
+    WHERE clientes.estado = 1
     GROUP BY clientes.id
     ORDER BY TotalCompras DESC;
 //DELIMITER ;
@@ -93,20 +97,21 @@ DELIMITER //
 CREATE PROCEDURE SP_Clientes_DetalleCompras(IN cliente INT)
 BEGIN
     SELECT 
-		clientes.nit, clientes.nombre, 
-        productos.nombre, 
-        detalle_facturas.cantidad, 
+		clientes.nit As Nit, 
+        clientes.nombre As Cliente, 
+        productos.nombre As Producto, 
+        detalle_facturas.cantidad As Cantidad, 
         (SELECT precio FROM historial_precios 
 			WHERE historial_precios.id_producto = productos.id 
-			ORDER BY fecha DESC LIMIT 1) AS precio, 
-        detalle_facturas.subtotal, 
-        facturas.fecha
+			ORDER BY fecha DESC LIMIT 1) AS Precio, 
+        detalle_facturas.subtotal As Subtotal, 
+        facturas.fecha As Fecha
     FROM clientes
     INNER JOIN facturas ON clientes.id = facturas.id_cliente
     INNER JOIN detalle_facturas ON facturas.id = detalle_facturas.id_factura
     INNER JOIN productos ON detalle_facturas.id_producto = productos.id
     INNER JOIN historial_precios ON productos.id = historial_precios.id_producto
-    WHERE clientes.id = cliente
+    WHERE clientes.id = cliente AND clientes.estado = 1
     ORDER BY facturas.fecha;
 END 
 //DELIMITER;
@@ -116,10 +121,11 @@ END
 DELIMITER //
 CREATE VIEW VW_Clientes_General
 AS
-   SELECT nit, nombre, apellido, puntos_privilegio
-    FROM clientes;
+   SELECT nit As Nit, nombre As Nombre, apellido As Apellido, puntos_privilegio As Puntos
+    FROM clientes
+    WHERE clientes.estado = 1;
 //DELIMITER ;
-SELECT * FROM VW_Clientes_General;
+/*SELECT * FROM VW_Clientes_General;*/
 
 
 DELIMITER //
@@ -129,17 +135,18 @@ CREATE PROCEDURE SP_Compras_General(
 )
 BEGIN
     SELECT 
-        productos.nombre, 
-        detalle_compras.cantidad, 
+        productos.nombre As Producto, 
+        detalle_compras.cantidad As Cantidad, 
         (SELECT costo FROM historial_costos 
 			WHERE historial_costos.id_producto = productos.id 
-			ORDER BY fecha DESC LIMIT 1) AS costo, 
-        detalle_compras.subtotal, 
-        compras.fecha
+			ORDER BY fecha DESC LIMIT 1) AS Costo, 
+        detalle_compras.subtotal As Subtotal, 
+        compras.fecha As Fecha
     FROM compras
     INNER JOIN detalle_compras ON compras.id = detalle_compras.id_compra
     INNER JOIN productos ON detalle_compras.id_producto = productos.id
     INNER JOIN historial_costos ON productos.id = historial_costos.id_producto
+    WHERE compras.estado = 1
     ORDER BY compras.fecha;
 END 
 //DELIMITER ;
@@ -153,17 +160,18 @@ CREATE PROCEDURE SP_Ventas_General(
 )
 BEGIN
     SELECT 
-        productos.nombre, 
-        detalle_facturas.cantidad, 
+        productos.nombre As Producto, 
+        detalle_facturas.cantidad As Cantidad, 
         (SELECT precio FROM historial_precios 
 			WHERE historial_precios.id_producto = productos.id 
-			ORDER BY fecha DESC LIMIT 1) AS precio, 
-        detalle_facturas.subtotal, 
-        facturas.fecha
+			ORDER BY fecha DESC LIMIT 1) AS Precio, 
+        detalle_facturas.subtotal As Subtotal, 
+        facturas.fecha As Fecha
     FROM facturas
     INNER JOIN detalle_facturas ON facturas.id = detalle_facturas.id_factura
     INNER JOIN productos ON detalle_facturas.id_producto = productos.id
     INNER JOIN historial_precios ON productos.id = historial_precios.id_producto
+    WHERE facturas.estado = 1
     ORDER BY facturas.fecha;
 END 	
 //DELIMITER ;
@@ -173,10 +181,10 @@ END
 DELIMITER //
 CREATE PROCEDURE SP_Productos_ExistenciaSucursal(IN sucursal INT)
 	BEGIN
-    SELECT codigo, nombre, existencia
+    SELECT codigo As Codigo, nombre As Producto, existencia As Existencia
     FROM productos
     INNER JOIN producto_sucursales ON productos.id = producto_sucursales.id_producto
-    WHERE producto_sucursales.id_sucursal = sucursal;
+    WHERE producto_sucursales.id_sucursal = sucursal AND productos.estado = 1;
 END //
 DELIMITER ;
 /*CALL SP_Productos_ExistenciaSucursal(1);*/
@@ -185,9 +193,10 @@ DELIMITER ;
 DELIMITER //
 CREATE VIEW VW_Productos_ExistenciaGeneral
 AS
-   SELECT codigo, nombre, SUM(producto_sucursales.existencia) As TotalExistencia
+   SELECT codigo As Codigo, nombre As Producto, SUM(producto_sucursales.existencia) As TotalExistencia
     FROM productos
     INNER JOIN producto_sucursales ON productos.id = producto_sucursales.id_producto
+    WHERE productos.estado = 1
     GROUP BY productos.id;
 //DELIMITER ;
 /*SELECT * FROM VW_Productos_ExistenciaGeneral;*/
@@ -201,11 +210,40 @@ CREATE PROCEDURE SP_Usuarios_Login(
 BEGIN
     DECLARE v_rol VARCHAR(255);
     DECLARE v_sucursal VARCHAR(255);
-    SELECT nombre_usuario, roles.nombre, id_empleado
+    SELECT nombre_usuario As Usuario, roles.nombre As Rol, id_empleado As IdEmpelado, empleados.nombre As NombreEmpleado, id_sucursal As IdSucursal, sucursales.nombre As NombreSucursal
     FROM usuarios
     INNER JOIN roles ON usuarios.id_rol = roles.id
+    INNER JOIN sucursales ON usuarios.id_sucursal = sucursales.id
     WHERE nombre_usuario = usuario_p AND contraseña = contraseña_p AND usuarios.estado = 1;
 END
 //DELIMITER ;
 /*CALL SP_Usuarios_Login('Candy','123');*/
+
+DELIMITER //
+CREATE VIEW VW_Productos_General
+AS
+   SELECT productos.id As id, codigo As Codigo, productos.nombre As Nombre, marcas.nombre As Marca, categorias.nombre As Categoria
+    FROM productos
+    INNER JOIN marcas ON productos.id_marca = marcas.id
+    INNER JOIN categorias ON productos.id_categoria = categorias.id
+    WHERE productos.estado = 1
+//DELIMITER ;
+/*SELECT * FROM VW_Productos_General;*/
+
+DELIMITER //
+CREATE VIEW VW_Usuarios_General
+AS
+   SELECT usuarios.id As id, 
+	   usuarios.nombre_usuario As Usuario, 
+	   concat(empleados.nombre, ' ', empleados.apellido) As Empleado, 
+	   roles.nombre As Rol
+    FROM usuarios
+    INNER JOIN empleados ON usuarios.id_empleado = empleados.id
+    INNER JOIN roles ON usuarios.id_rol = roles.id
+    WHERE usuarios.estado = 1
+//DELIMITER ;
+/*SELECT * FROM VW_Usuarios_General;*/
+
+
+
 
