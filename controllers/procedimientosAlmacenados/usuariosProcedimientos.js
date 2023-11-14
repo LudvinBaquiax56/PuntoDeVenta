@@ -8,10 +8,10 @@ module.exports = {
 
   async Login(req, res) {
     try {
-     const { usuario, contrasena } = req.body;
-     console.log(usuario, contrasena);
+      const { usuario, contrasena } = req.body;
+      console.log(usuario, contrasena);
       const datos = await Usuario.sequelize.query("CALL SP_Usuarios_Login(:usuario,:contrasena);", {
-        replacements: {usuario, contrasena},
+        replacements: { usuario, contrasena },
         type: QueryTypes.SELECT,
         model: Usuario,
       });
