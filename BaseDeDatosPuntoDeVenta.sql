@@ -1,7 +1,7 @@
 use proyectofinal1;
 
 /* SE UTILIZA PARA ELIMINAR UN PROCEDIMIENTO (NO UTILIZAR SIN PREVIA AUTORIZACIÓN)
-DROP PROCEDURE IF EXISTS SP_venta;
+DROP PROCEDURE IF EXISTS SP_Productos_MasVendidos;
 DROP VIEW VW_Productos_ExistenciaGeneral;*/
 
 
@@ -12,7 +12,7 @@ CREATE PROCEDURE SP_Productos_MasVendidos(
     IN fecha_fin DATE
 )
 BEGIN
-    SELECT productos.codigo As Codigo, productos.nombre As Producto, SUM(detalle_facturas.cantidad) AS TotalVendido, facturas.fecha As Fecha
+    SELECT productos.codigo As Codigo, productos.nombre As Producto, SUM(detalle_facturas.cantidad) AS TotalVendido, DATE_FORMAT(facturas.fecha, '%Y-%m-%d') As Fecha
     FROM productos
     INNER JOIN detalle_facturas ON productos.id = detalle_facturas.id_producto
     INNER JOIN facturas ON facturas.id = detalle_facturas.id_factura
@@ -30,7 +30,7 @@ CREATE PROCEDURE SP_Productos_MenosVendidos(
     IN fecha_fin DATE
 )
 BEGIN
-    SELECT productos.codigo As Codigo, productos.nombre As Producto, SUM(detalle_facturas.cantidad) AS TotalVendido, facturas.fecha As Fecha
+    SELECT productos.codigo As Codigo, productos.nombre As Producto, SUM(detalle_facturas.cantidad) AS TotalVendido, DATE_FORMAT(facturas.fecha, '%Y-%m-%d') As Fecha
     FROM productos
     INNER JOIN detalle_facturas ON productos.id = detalle_facturas.id_producto
     INNER JOIN facturas ON facturas.id = detalle_facturas.id_factura
@@ -137,20 +137,18 @@ BEGIN
     SELECT 
         productos.nombre As Producto, 
         detalle_compras.cantidad As Cantidad, 
-        (SELECT costo FROM historial_costos 
-			WHERE historial_costos.id_producto = productos.id 
-			ORDER BY fecha DESC LIMIT 1) AS Costo, 
+        (detalle_compras.subtotal / detalle_compras.cantidad) AS Costo, 
         detalle_compras.subtotal As Subtotal, 
-        compras.fecha As Fecha
+        DATE_FORMAT(compras.fecha, '%Y-%m-%d') AS Fecha
     FROM compras
     INNER JOIN detalle_compras ON compras.id = detalle_compras.id_compra
     INNER JOIN productos ON detalle_compras.id_producto = productos.id
     INNER JOIN historial_costos ON productos.id = historial_costos.id_producto
-    WHERE compras.estado = 1
+    WHERE compras.estado = 1 AND DATE(compras.fecha) BETWEEN fecha_inicio AND fecha_fin
     ORDER BY compras.fecha;
 END 
 //DELIMITER ;
-/*CALL SP_Compras('2023-05-01', '2023-11-01');*/
+/*CALL SP_Compras_General('2023-05-01', '2023-11-14');*/
 
 
 DELIMITER //
@@ -160,22 +158,20 @@ CREATE PROCEDURE SP_Ventas_General(
 )
 BEGIN
     SELECT 
-        productos.nombre As Producto, 
-        detalle_facturas.cantidad As Cantidad, 
-        (SELECT precio FROM historial_precios 
-			WHERE historial_precios.id_producto = productos.id 
-			ORDER BY fecha DESC LIMIT 1) AS Precio, 
-        detalle_facturas.subtotal As Subtotal, 
-        facturas.fecha As Fecha
+        productos.nombre AS Producto, 
+        detalle_facturas.cantidad AS Cantidad, 
+        (detalle_facturas.subtotal / detalle_facturas.cantidad) AS Precio, 
+        detalle_facturas.subtotal AS Subtotal, 
+        DATE_FORMAT(facturas.fecha, '%Y-%m-%d') AS Fecha
     FROM facturas
     INNER JOIN detalle_facturas ON facturas.id = detalle_facturas.id_factura
     INNER JOIN productos ON detalle_facturas.id_producto = productos.id
     INNER JOIN historial_precios ON productos.id = historial_precios.id_producto
-    WHERE facturas.estado = 1
-    ORDER BY facturas.fecha;
+    WHERE facturas.estado = 1 AND DATE(facturas.fecha) BETWEEN fecha_inicio AND fecha_fin
+    ORDER BY facturas.fecha; 
 END 	
 //DELIMITER ;
-/*CALL SP_Ventas('2023-05-01', '2023-11-01');*/
+/*CALL SP_Ventas_General('2023-05-01', '2023-11-14');*/
 
 
 DELIMITER //

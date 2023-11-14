@@ -8,6 +8,7 @@ const Producto = db.productos;
 const Producto_sucursal = db.producto_sucursales;
 const Historial_precio = db.historial_precios;
 const Historial_costo = db.historial_costos;
+const Usuario = db.usuarios;
 const moment = require('moment');
 const axios = require('axios');
 const { Op } = require("sequelize");
@@ -39,15 +40,23 @@ module.exports = {
     create(req, res) {
         let datos = req.body;
         Factura.findOne({
-            where: {
-                id: datos.id_factura,
-                estado: 1
-            }
+            order: [['createdAt', 'DESC']],
+            limit: 1
         })
         .then(factura => {
             if (!factura) {
                 return res.status(404).json({ error: 'Factura no encontrada' });
             } else {
+                Usuario.findOne({
+                    where: {
+                        id: factura.id_usuario,
+                        estado: 1
+                    }
+                })
+                .then(usuario => {
+                    if (!usuario) {
+                        return res.status(404).json({ error: 'Usuario no encontrado' });
+                    } else {
                 Producto.findOne({
                     where: {
                         id: datos.id_producto,
@@ -61,7 +70,7 @@ module.exports = {
                         Producto_sucursal.findOne({
                             where: {
                                 id_producto: datos.id_producto,
-                                id_sucursal: factura.id_sucursal,
+                                id_sucursal: usuario.id_sucursal,
                                 estado: 1
                             }
                         })
@@ -105,7 +114,7 @@ module.exports = {
                                                     subtotal: subtotal, 
                                                     ganancia: ganancia,
                                                     estado: 1,
-                                                    id_factura: datos.id_factura,
+                                                    id_factura: factura.id,
                                                     id_producto: datos.id_producto
                                                 };
         
@@ -122,7 +131,7 @@ module.exports = {
                                                             'Content-Type': 'application/json'
                                                         },
                                                         data: {
-                                                            id: datos.id_factura,
+                                                            id: factura.id,
                                                             subtotal: subtotalFac,
                                                             total: total,
                                                             existencia: existencia
@@ -174,7 +183,7 @@ module.exports = {
                 })
             }
         })
-    },
+    } }) },
 
     update (req, res) {
         let datos = req.body;
