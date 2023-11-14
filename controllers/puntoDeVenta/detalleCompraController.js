@@ -6,6 +6,7 @@ const Compra = db.compras;
 const Producto = db.productos;
 const Producto_sucursal = db.producto_sucursales;
 const Historial_costo = db.historial_costos;
+const Usuario = db.usuarios;
 const moment = require('moment');
 const axios = require('axios')
 const { Op } = require("sequelize");
@@ -37,21 +38,29 @@ module.exports = {
     create(req, res) {
         let datos = req.body;
         Compra.findOne({
-            where: {
-                id: datos.id_compra,
-                estado: 1
-            }
+            order: [['createdAt', 'DESC']],
+            limit: 1
         })
-            .then(compra => {
-                if (!compra) {
-                    return res.status(404).json({ error: 'Compra no encontrada' });
-                } else {
-                    Producto.findOne({
-                        where: {
-                            id: datos.id_producto,
-                            estado: 1
-                        }
-                    })
+        .then(compra => {
+            if (!compra) {
+                return res.status(404).json({ error: 'Compra no encontrada' });
+            } else {
+                Usuario.findOne({
+                    where: {
+                        id: compra.id_usuario,
+                        estado: 1
+                    }
+                })
+                .then(usuario => {
+                    if (!usuario) {
+                        return res.status(404).json({ error: 'Usuario no encontrado' });
+                    } else {
+                        Producto.findOne({
+                            where: {
+                                id: datos.id_producto,
+                                estado: 1
+                            }
+                        })
                         .then(producto => {
                             if (!producto) {
                                 return res.status(404).json({ error: 'Producto no encontrado' });
@@ -59,14 +68,29 @@ module.exports = {
                                 Producto_sucursal.findOne({
                                     where: {
                                         id_producto: datos.id_producto,
-                                        id_sucursal: compra.id_sucursal,
+                                        id_sucursal: usuario.id_sucursal,
                                         estado: 1
                                     }
                                 })
-                                    .then(productoSucursal => {
-                                        if (!productoSucursal) {
-                                            return res.status(404).json({ error: 'Producto y Sucursal no encontrados' });
-                                        } else {
+                                .then(async productoSucursal => {
+                                    if (!productoSucursal) {
+                                        return res.status(404).json({ error: 'Producto y Sucursal no encontrados' });
+                                    } else {
+                                        const costoOptions = {
+                                            'method': 'POST',
+                                            'url': 'http://localhost:3000/historialCosto/create',
+                                            'headers': {
+                                                'Content-Type': 'application/json'
+                                            },
+                                            data: {
+                                                id_producto: datos.id_producto,
+                                                costo: datos.costo,
+                                                descripcion: datos.descripcion
+                                            }
+                                        };
+                                        try {
+                                            const resultCosto = await axios(costoOptions);
+                                            const resultadoCosto = resultCosto.data;                                         
                                             Historial_costo.findOne({
                                                 where: {
                                                     id_producto: datos.id_producto,
@@ -75,85 +99,91 @@ module.exports = {
                                                 order: [['createdAt', 'DESC']],
                                                 limit: 1
                                             })
-                                                .then(costos => {
-                                                    if (!costos) {
-                                                        return res.status(404).json({ error: 'Costo no encontrado' });
-                                                    } else {
-                                                        const costoPro = costos.costo;
-                                                        const subtotal = costoPro * datos.cantidad;
-                                                        const datos_detalle = {
-                                                            cantidad: datos.cantidad,
-                                                            subtotal: subtotal,
-                                                            estado: 1,
-                                                            id_compra: datos.id_compra,
-                                                            id_producto: datos.id_producto
+                                            .then(costos => {
+                                                if (!costos) {
+                                                    return res.status(404).json({ error: 'Costo no encontrado' });
+                                                } else {
+                                                    const costoPro = costos.costo;
+                                                    const subtotal = costoPro * datos.cantidad;
+                                                    const datos_detalle = { 
+                                                        cantidad: datos.cantidad,
+                                                        subtotal: subtotal, 
+                                                        estado: 1,
+                                                        id_compra: compra.id,
+                                                        id_producto: datos.id_producto
+                                                    };
+                        
+                                                    Detalle_compra.create(datos_detalle)
+                                                    .then(async detalle => {
+                                                        const total = parseFloat(compra.total) + parseFloat(subtotal);
+                                                        const existencia = parseFloat(productoSucursal.existencia) + parseFloat(datos.cantidad);
+                        
+                                                        const compraOptions = {
+                                                            'method': 'PUT',
+                                                            'url': 'http://localhost:3000/compra/update',
+                                                            'headers': {
+                                                                'Content-Type': 'application/json'
+                                                            },
+                                                            data: {
+                                                                id: compra.id,
+                                                                total: total,
+                                                                existencia: existencia
+                                                            }
                                                         };
-
-                                                        Detalle_compra.create(datos_detalle)
-                                                            .then(async detalle => {
-                                                                const total = parseFloat(compra.total) + parseFloat(subtotal);
-                                                                const existencia = parseFloat(productoSucursal.existencia) + parseFloat(datos.cantidad);
-
-                                                                const compraOptions = {
-                                                                    'method': 'PUT',
-                                                                    'url': 'http://localhost:3000/compra/update',
-                                                                    'headers': {
-                                                                        'Content-Type': 'application/json'
-                                                                    },
-                                                                    data: {
-                                                                        id: datos.id_compra,
-                                                                        total: total,
-                                                                        existencia: existencia
-                                                                    }
-                                                                };
-
-                                                                try {
-                                                                    const resultCompra = await axios(compraOptions);
-                                                                    const resultadoCompra = resultCompra.data;
-
-                                                                    const productoOptions = {
-                                                                        'method': 'PUT',
-                                                                        'url': 'http://localhost:3000/productoSucursal/update',
-                                                                        'headers': {
-                                                                            'Content-Type': 'application/json'
-                                                                        },
-                                                                        data: {
-                                                                            id: productoSucursal.id,
-                                                                            existencia: existencia
-                                                                        }
-                                                                    };
-
-                                                                    try {
-                                                                        const resultProducto = await axios(productoOptions);
-                                                                        const resultadoProducto = resultProducto.data;
-
-                                                                        res.status(200).send({
-                                                                            compra: resultadoCompra,
-                                                                            producto: resultadoProducto
-                                                                        });
-                                                                    } catch (e) {
-                                                                        res.status(500).send("Error con el servidor (producto)");
-                                                                    }
-                                                                } catch (e) {
-                                                                    res.status(500).send("Error con el servidor (compra)");
+                        
+                                                        try {
+                                                            const resultCompra = await axios(compraOptions);
+                                                            const resultadoCompra = resultCompra.data;
+                        
+                                                            const productoOptions = {
+                                                                'method': 'PUT',
+                                                                'url': 'http://localhost:3000/productoSucursal/update',
+                                                                'headers': {
+                                                                    'Content-Type': 'application/json'
+                                                                },
+                                                                data: {
+                                                                    id: productoSucursal.id,
+                                                                    existencia: existencia
                                                                 }
-                                                            })
-                                                            .catch(error => {
-                                                                console.log(error);
-                                                                return res.status(500).json({ error: 'Error al insertar' });
-                                                            });
-                                                    }
-                                                })
+                                                            };
+                        
+                                                            try {
+                                                                const resultProducto = await axios(productoOptions);
+                                                                const resultadoProducto = resultProducto.data;
+                                                                
+                                                                res.status(200).send({
+                                                                    compra: resultadoCompra,
+                                                                    producto: resultadoProducto,
+                                                                    costo: resultadoCosto
+                                                                });
+                                                            } catch (e) {
+                                                                res.status(500).send("Error con el servidor (producto)");
+                                                            }
+                                                        } catch (e) {
+                                                            res.status(500).send("Error con el servidor (compra)");
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.log(error);
+                                                        return res.status(500).json({ error: 'Error al insertar' });
+                                                    });
+                                                }
+                                            })
+                                        } catch (e) {
+                                            res.status(500).send("Error con el servidor (compra)");
                                         }
-
-                                    })
+                                    }
+                                })
                             }
                         })
-                }
-            })
+                    }
+                })
+            }
+        })
     },
-
-    update(req, res) {
+    
+  
+      update (req, res) {
         let datos = req.body
         Detalle_compra.update(
             {
