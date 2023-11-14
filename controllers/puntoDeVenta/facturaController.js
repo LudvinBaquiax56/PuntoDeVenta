@@ -1,8 +1,10 @@
-'use strict'
+'use strict';
+
 const Sequelize = require('sequelize');
 const db = require("../../models");
 const Factura = db.facturas;
 const Cliente = db.clientes;
+const Usuario = db.usuarios;
 const moment = require('moment');
 const axios = require('axios')
 const { Op } = require("sequelize");
@@ -40,39 +42,49 @@ module.exports = {
   },
 
   create(req, res) {
-    let datos = req.body
-    console.log(datos)
-    Cliente.findOne({
+    let datos = req.body 
+    Usuario.findOne({
       where: {
-        id: datos.id_cliente,
+        id: datos.id_usuario,
         estado: 1
       }
     })
-      .then(cliente => {
-        if (!cliente) {
-          return res.status(404).json({ error: 'Cliente no encontrado' });
-        }
-        const datos_ingreso = {
-          no_factura: datos.no_factura,
-          fecha: new Date(),
-          subtotal: 0,
-          descuento: datos.descuento,
-          total: 0,
-          estado: 1,
-          id_cliente: datos.id_cliente,
-          id_sucursal: datos.id_sucursal,
-          id_usuario: datos.id_usuario
-        };
-
-        Factura.create(datos_ingreso)
-          .then(facturas => {
-            res.send(facturas);
-          })
-          .catch(error => {
-            console.log(error)
-            return res.status(500).json({ error: 'Error al insertar' });
-          });
-      })
+    .then(usuario => {
+      if (!usuario) {
+        return res.status(404).json({ error: 'Usuario no encontrado' });
+      } else {
+        Cliente.findOne({
+          where: {
+            id: datos.id_cliente,
+            estado: 1
+          }
+        })
+        .then(cliente => {
+          if (!cliente) {
+            return res.status(404).json({ error: 'Cliente no encontrado' });
+          }
+          const datos_ingreso = { 
+            no_factura: datos.no_factura,
+            fecha: new Date(),
+            subtotal: 0,
+            descuento: datos.descuento,
+            total: 0,
+            estado: 1,
+            id_cliente: datos.id_cliente,
+            id_sucursal: usuario.id_sucursal,
+            id_usuario: datos.id_usuario
+          };
+          Factura.create(datos_ingreso)
+            .then(facturas => {
+              res.send(facturas);
+            })
+            .catch(error => {
+              console.log(error)
+              return res.status(500).json({ error: 'Error al insertar' });
+            });
+        })
+      }
+    })
   },
 
   update(req, res) {
@@ -94,11 +106,11 @@ module.exports = {
         }
       }
     )
-      .then(facturas => res.status(200).send('El registro ha sido actualizado'))
-      .catch(error => {
-        console.log(error)
-        return res.status(500).json({ error: 'Error al actualizar' });
-      });
+    .then(facturas => res.status(200).send('El registro ha sido actualizado'))
+    .catch(error => {
+      console.log(error)
+      return res.status(500).json({ error: 'Error al actualizar' });
+    });
   },
 
   async delete(req, res) {
@@ -117,10 +129,10 @@ module.exports = {
       { estado: 0 },
       { where: { id: id } }
     )
-      .then(facturas => res.status(200).send('El registro ha sido eliminado'))
-      .catch(error => {
-        console.log(error)
-        return res.status(500).json({ error: 'Error al eliminar' });
-      });
+    .then(facturas => res.status(200).send('El registro ha sido eliminado'))
+    .catch(error => {
+      console.log(error)
+      return res.status(500).json({ error: 'Error al eliminar' });
+    });
   },
 };
