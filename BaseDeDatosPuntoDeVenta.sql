@@ -1,7 +1,7 @@
 use proyectofinal1;
 
 /* SE UTILIZA PARA ELIMINAR UN PROCEDIMIENTO (NO UTILIZAR SIN PREVIA AUTORIZACIÓN)
-DROP PROCEDURE IF EXISTS SP_Productos_MasVendidos;
+DROP PROCEDURE IF EXISTS SP_Compras_General;
 DROP VIEW VW_Productos_ExistenciaGeneral;*/
 
 
@@ -16,12 +16,12 @@ BEGIN
     FROM productos
     INNER JOIN detalle_facturas ON productos.id = detalle_facturas.id_producto
     INNER JOIN facturas ON facturas.id = detalle_facturas.id_factura
-    WHERE facturas.fecha BETWEEN fecha_inicio AND fecha_fin AND productos.estado = 1
+    WHERE Date(facturas.fecha) BETWEEN fecha_inicio AND fecha_fin AND productos.estado = 1
     GROUP BY productos.id
     ORDER BY TotalVendido DESC;
 END 
 //DELIMITER ;
-/*CALL SP_Productos_MasVendidos('2023-05-01', '2023-11-01');*/
+/*CALL SP_Productos_MasVendidos('2023-05-01', '2023-11-14');*/
 
 
 DELIMITER //
@@ -34,12 +34,12 @@ BEGIN
     FROM productos
     INNER JOIN detalle_facturas ON productos.id = detalle_facturas.id_producto
     INNER JOIN facturas ON facturas.id = detalle_facturas.id_factura
-    WHERE facturas.fecha BETWEEN fecha_inicio AND fecha_fin AND productos.estado = 1
+    WHERE Date(facturas.fecha) BETWEEN fecha_inicio AND fecha_fin AND productos.estado = 1
     GROUP BY productos.id
     ORDER BY TotalVendido ASC;
 END 
 //DELIMITER ;
-/*CALL SP_Productos_MenosVendidos('2023-05-01', '2023-11-01');*/
+/*CALL SP_Productos_MenosVendidos('2023-05-01', '2023-11-14');*/
 
 
 DELIMITER //
@@ -143,7 +143,6 @@ BEGIN
     FROM compras
     INNER JOIN detalle_compras ON compras.id = detalle_compras.id_compra
     INNER JOIN productos ON detalle_compras.id_producto = productos.id
-    INNER JOIN historial_costos ON productos.id = historial_costos.id_producto
     WHERE compras.estado = 1 AND DATE(compras.fecha) BETWEEN fecha_inicio AND fecha_fin
     ORDER BY compras.fecha;
 END 
@@ -166,7 +165,6 @@ BEGIN
     FROM facturas
     INNER JOIN detalle_facturas ON facturas.id = detalle_facturas.id_factura
     INNER JOIN productos ON detalle_facturas.id_producto = productos.id
-    INNER JOIN historial_precios ON productos.id = historial_precios.id_producto
     WHERE facturas.estado = 1 AND DATE(facturas.fecha) BETWEEN fecha_inicio AND fecha_fin
     ORDER BY facturas.fecha; 
 END 	
