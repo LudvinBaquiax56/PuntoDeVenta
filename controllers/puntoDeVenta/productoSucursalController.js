@@ -35,6 +35,7 @@ module.exports = {
   async findProductoCodigoSucursal(req, res) {
     let idSucursal = req.params.idSucursal;
     let codigoP = req.params.codigo;
+    console.log(codigoP)
     try {
       const productoConHistorialYSucursal = await Producto.findOne({
         attributes: [
@@ -73,7 +74,7 @@ module.exports = {
       const respuestaFormateada = {
         id,
         codigo,
-        Producto: nombre,
+        nombre: productoConHistorialYSucursal.dataValues.Producto,
         descripcion,
         precio,
         id_sucursal: producto_sucursales[0].id_sucursal, // Suponiendo que siempre hay una sola sucursal
