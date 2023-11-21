@@ -83,7 +83,7 @@ module.exports = {
                                         id_producto: datos.id_producto,
                                         estado: 1
                                     },
-                                    order: [['createdAt', 'DESC']],
+                                    order: [['id', 'DESC']],
                                     limit: 1
                                 })
                                 .then(precios => {
@@ -95,7 +95,7 @@ module.exports = {
                                                 id_producto: datos.id_producto,
                                                 estado: 1
                                             },
-                                            order: [['createdAt', 'DESC']],
+                                            order: [['id', 'DESC']],
                                             limit: 1
                                         })
                                         .then(costos => {
