@@ -38,7 +38,7 @@ module.exports = {
     create(req, res) {
         let datos = req.body;
         Compra.findOne({
-            order: [['createdAt', 'DESC']],
+            order: [['id', 'DESC']],
             limit: 1
         })
         .then(compra => {
